@@ -44,9 +44,13 @@ public class RoomServiceImpl implements RoomService {
 
         Room roomToSave = modelMapper.map(roomDTO, Room.class);
 
-        if (imageFile != null){
+        // Verifica se foi enviado um arquivo de imagem
+        if (imageFile != null && !imageFile.isEmpty()) {
             String imagePath = saveImageToFrontend(imageFile);
             roomToSave.setImageUrl(imagePath);
+        } else if (roomDTO.getImageUrl() != null && !roomDTO.getImageUrl().isBlank()) {
+            // Se não veio arquivo, mas veio uma URL, usa a URL
+            roomToSave.setImageUrl(roomDTO.getImageUrl());
         }
 
         roomRepository.save(roomToSave);
@@ -57,6 +61,7 @@ public class RoomServiceImpl implements RoomService {
                 .build();
     }
 
+
     @Override
     public Response updateRoom(RoomDTO roomDTO, MultipartFile imageFile) {
         Room existingRoom = roomRepository.findById(roomDTO.getId())
@@ -65,6 +70,8 @@ public class RoomServiceImpl implements RoomService {
         if (imageFile != null && !imageFile.isEmpty()){
             String imagePath = saveImageToFrontend(imageFile);
             existingRoom.setImageUrl(imagePath);
+        } else if (roomDTO.getImageUrl() != null && !roomDTO.getImageUrl().isBlank()) {
+            existingRoom.setImageUrl(roomDTO.getImageUrl());
         }
 
         if (roomDTO.getRoomNumber() != null && roomDTO.getRoomNumber() >= 0){
