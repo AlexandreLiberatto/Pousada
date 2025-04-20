@@ -8,7 +8,7 @@ const AddRoomPage = () => {
   const [roomDetails, setRoomDetails] = useState({
     imageUrl: null,
     type: "",
-    roomNumber:"",
+    roomNumber: "",
     pricePerNight: "",
     capacity: "",
     description: "",
@@ -20,7 +20,7 @@ const AddRoomPage = () => {
   const [success, setSuccess] = useState("");
   const [roomTypes, setRoomTypes] = useState([]);
 
-  const [newRoomType, setNewRoomType] = useState("");  // Estado para lidar com a entrada do novo tipo de quarto
+  const [newRoomType, setNewRoomType] = useState(""); // Novo tipo de quarto
 
   useEffect(() => {
     const fetchRoomTypes = async () => {
@@ -43,17 +43,20 @@ const AddRoomPage = () => {
   };
 
   const handleRoomTypeChange = (e) => {
-      setRoomDetails((prevState) => ({
-        ...prevState,
-        type: e.target.value,
-      }));
+    const selectedType = e.target.value;
+    setRoomDetails((prevState) => ({
+      ...prevState,
+      type: selectedType,
+    }));
+    // Limpa o novo tipo caso o usuário volte a selecionar um existente
+    if (selectedType !== "outro") {
+      setNewRoomType("");
+    }
   };
 
   const handleNewRoomTypeChange = (e) => {
     setNewRoomType(e.target.value);
   };
-
-  
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -67,8 +70,10 @@ const AddRoomPage = () => {
   };
 
   const addRoom = async () => {
+    const tipoFinal = newRoomType.trim() !== "" ? newRoomType : roomDetails.type;
+
     if (
-      !roomDetails.type ||
+      !tipoFinal ||
       !roomDetails.pricePerNight ||
       !roomDetails.capacity ||
       !roomDetails.roomNumber
@@ -84,7 +89,7 @@ const AddRoomPage = () => {
 
     try {
       const formData = new FormData();
-      formData.append("type", roomDetails.type);
+      formData.append("type", tipoFinal);
       formData.append("pricePerNight", roomDetails.pricePerNight);
       formData.append("capacity", roomDetails.capacity);
       formData.append("roomNumber", roomDetails.roomNumber);
@@ -135,8 +140,22 @@ const AddRoomPage = () => {
                 {type}
               </option>
             ))}
+            <option value="outro">Outro (Novo Tipo)</option>
           </select>
         </div>
+
+        {roomDetails.type === "outro" && (
+          <div className="form-group">
+            <label>Novo Tipo de Quarto</label>
+            <input
+              type="text"
+              placeholder="Informe o novo tipo de quarto"
+              value={newRoomType}
+              onChange={handleNewRoomTypeChange}
+            />
+          </div>
+        )}
+
         <div className="form-group">
           <label>Preço do Quarto</label>
           <input
@@ -146,6 +165,7 @@ const AddRoomPage = () => {
             onChange={handleChange}
           />
         </div>
+
         <div className="form-group">
           <label>Número do Quarto</label>
           <input
@@ -155,6 +175,7 @@ const AddRoomPage = () => {
             onChange={handleChange}
           />
         </div>
+
         <div className="form-group">
           <label>Capacidade</label>
           <input
@@ -164,6 +185,7 @@ const AddRoomPage = () => {
             onChange={handleChange}
           />
         </div>
+
         <div className="form-group">
           <label>Descrição do Quarto</label>
           <textarea
@@ -172,8 +194,9 @@ const AddRoomPage = () => {
             onChange={handleChange}
           ></textarea>
         </div>
+
         <button className="update-button" onClick={addRoom}>
-          Adicinar Quarto
+          Adicionar Quarto
         </button>
       </div>
     </div>
