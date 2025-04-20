@@ -60,7 +60,7 @@ const PaymentForm = ({clientSecrete, amount, onPaymentSuccess, onPaymentError}) 
             </form>
 
             {error && <p className="error-message">{error}</p>}
-            {succeeded && <p className="success-message">Pagamento efetuado com sucesso: Obrigado pela sua reserva.</p>}
+            {succeeded && <p className="success-message">Pagamento efetuado com sucesso, obrigado pela sua reserva!</p>}
         </div>
     )
 
