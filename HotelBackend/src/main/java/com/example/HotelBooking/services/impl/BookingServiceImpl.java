@@ -17,6 +17,7 @@ import com.example.HotelBooking.services.BookingService;
 import com.example.HotelBooking.services.NotificationService;
 import com.example.HotelBooking.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -34,6 +35,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
+    @Value("${fronteendUrl}")
+    private String frontendUrl;
+
+
 
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
@@ -45,6 +50,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Response getAllBookings() {
+
         List<Booking> bookingList =bookingRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         List<BookingDTO> bookingDTOList = modelMapper.map(bookingList, new TypeToken<List<BookingDTO>>() {}.getType());
 
@@ -66,28 +72,28 @@ public class BookingServiceImpl implements BookingService {
         User currentUser = userService.getCurrentLoggedInUser();
 
         Room room = roomRepository.findById(bookingDTO.getRoomId())
-                .orElseThrow(()-> new NotFoundException("Room Not Found"));
+                .orElseThrow(()-> new NotFoundException("Quarto não encontrado"));
 
 
         //validação: Certifique-se de que a data de check-in não seja anterior a hoje
         if (bookingDTO.getCheckInDate().isBefore(LocalDate.now())){
-            throw new InvalidBookingStateAndDateException("check in date cannot be before today ");
+            throw new InvalidBookingStateAndDateException("A data de entrada não pode ser antes de hoje");
         }
 
         //validação: Certifique-se de que a data de check-out não seja anterior à data de check-in
         if (bookingDTO.getCheckInDate().isBefore(bookingDTO.getCheckInDate())){
-            throw new InvalidBookingStateAndDateException("check out date cannot be before check in date ");
+            throw new InvalidBookingStateAndDateException("A data de saída não pode ser anterior à data de entrada");
         }
 
         //validação: certifique-se de que a data de check-in não seja a mesma que a data de check-out
         if (bookingDTO.getCheckInDate().isEqual(bookingDTO.getCheckOutDate())){
-            throw new InvalidBookingStateAndDateException("check in date cannot be equal to check out date ");
+            throw new InvalidBookingStateAndDateException("A data de entrada não pode ser igual à data de saída");
         }
 
         //validar disponibilidade de quartos
        boolean isAvailable = bookingRepository.isRoomAvailable(room.getId(), bookingDTO.getCheckInDate(), bookingDTO.getCheckOutDate());
         if (!isAvailable) {
-            throw new InvalidBookingStateAndDateException("Room is not available for the selected date ranges");
+            throw new InvalidBookingStateAndDateException("O quarto não está disponível para os intervalos de datas selecionados");
         }
 
         //calcular o preço total necessário para pagar a estadia
@@ -109,9 +115,9 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking); //sauva no database
 
         //gerar a url de pagamento que será enviada por e-mail
-         String paymentUrl = "http://localhost:3000/payment/" + bookingReference + "/" + totalPrice;
+        String paymentUrl = frontendUrl + "/payment/" + bookingReference + "/" + totalPrice;
 
-         log.info("PAYMENT LINK: {}", paymentUrl);
+        log.info("PAYMENT LINK: {}", paymentUrl);
 
          //enviar notificação por e-mail
         NotificationDTO notificationDTO = NotificationDTO.builder()
@@ -126,7 +132,7 @@ public class BookingServiceImpl implements BookingService {
 
         return Response.builder()
                 .status(200)
-                .message("Booking is successfully")
+                .message("Reserva efetuada com sucesso")
                 .booking(bookingDTO)
                 .build();
 
