@@ -1948,6 +1948,362 @@
   }
   
  
+  /* Adicione isso ao final do seu arquivo CSS existente */
+
+/* ==================== RESPONSIVIDADE GERAL ==================== */
+@media (max-width: 1200px) {
+    /* Ajustes para tablets grandes */
+    .search-field {
+      flex: 0 0 calc(33.33% - 20px);
+    }
+  }
+  
+  @media (max-width: 992px) {
+    /* Ajustes para tablets */
+    .search-field {
+      flex: 0 0 calc(50% - 20px);
+    }
+    
+    .room-list-item-image {
+      width: 25%;
+    }
+    
+    .service-card {
+      flex: 1 1 100%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    /* Ajustes para tablets pequenos e celulares grandes */
+    .navbar {
+      padding: 15px 20px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .navbar-ul {
+      width: 100%;
+      margin-top: 15px;
+      justify-content: space-between;
+    }
+    
+    .navbar-ul li {
+      margin: 5px 0;
+    }
+    
+    .search-container {
+      margin-left: 0;
+      padding: 10px;
+    }
+    
+    .search-field {
+      flex: 0 0 100%;
+      margin: 5px 0;
+    }
+    
+    .room-results {
+      margin: 10px;
+    }
+    
+    .room-list-item {
+      flex-direction: column;
+      height: auto;
+    }
+    
+    .room-list-item-image {
+      width: 100%;
+      height: 200px;
+    }
+    
+    .book-now-div {
+      margin-top: 10px;
+      align-self: flex-start;
+    }
+    
+    .service-section {
+      margin: 0 10px;
+    }
+    
+    .all-room-filter-div {
+      margin-left: 10px;
+    }
+    
+    .filter-select-div {
+      margin-left: 10px;
+    }
+    
+    .add-room-button {
+      float: none;
+      margin: 10px;
+      display: block;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    /* Ajustes para celulares */
+    .navbar-brand a {
+      font-size: 20px;
+    }
+    
+    .navbar-ul {
+      flex-direction: column;
+    }
+    
+    .navbar-ul li {
+      width: 100%;
+      margin: 5px 0;
+    }
+    
+    .auth-container {
+      margin: 10px;
+      padding: 15px;
+    }
+    
+    .header-banner h1 {
+      font-size: 24px;
+    }
+    
+    .header-banner h3 {
+      font-size: 16px;
+    }
+    
+    .room-details-booking {
+      margin: 10px;
+      padding: 10px;
+    }
+    
+    .room-details-image {
+      width: 100%;
+    }
+    
+    .find-booking-page,
+    .edit-booking-page {
+      max-width: 100%;
+      margin: 10px;
+      padding: 15px;
+    }
+    
+    .admin-page {
+      margin: 20px 10px;
+      padding: 15px;
+    }
+    
+    .admin-actions {
+      flex-direction: column;
+    }
+    
+    .admin-button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    .profile-page,
+    .edit-profile-page {
+      margin: 10px;
+      padding: 15px;
+    }
+    
+    .profile-actions {
+      flex-direction: column;
+    }
+    
+    .profile-actions button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    
+    .payment-form {
+      padding: 1rem;
+      margin: 10px;
+    }
+  }
+  
+  /* ==================== COMPONENTES ESPECÍFICOS ==================== */
+  
+  /* Navbar Mobile */
+  @media (max-width: 768px) {
+    .navbar {
+      position: relative;
+      padding: 15px 20px;
+    }
+    
+    .navbar-ul {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .navbar-ul.active {
+      display: flex;
+    }
+    
+    .navbar-toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 30px;
+        height: 24px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        box-sizing: border-box;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        z-index: 10;
+        }
+
+        .navbar-toggle:focus {
+            outline: none;
+        }
+        
+        .hamburger-line {
+            width: 30px;
+            height: 2px;
+            background: #007F86;
+            transition: all 0.3s linear;
+            transform-origin: 1px;
+        }
+        
+        /* Estilos quando o menu está aberto */
+        .navbar-toggle.open .hamburger-line:first-child {
+            transform: rotate(45deg);
+        }
+        
+        .navbar-toggle.open .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .navbar-toggle.open .hamburger-line:last-child {
+            transform: rotate(-45deg);
+        }
+  }
+  
+  /* Formulários Mobile */
+  @media (max-width: 576px) {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+    }
+    
+    button[type="submit"],
+    .confirm-booking,
+    .home-search-button {
+      width: 100%;
+    }
+  }
+  
+  /* Cards de Quartos Mobile */
+  @media (max-width: 768px) {
+    .room-list-item {
+      flex-direction: column;
+    }
+    
+    .room-list-item-image {
+      width: 100%;
+      height: 200px;
+    }
+    
+    .room-details {
+      margin-left: 0;
+      padding: 10px;
+    }
+  }
+  
+  /* Página de Pagamento Mobile */
+  @media (max-width: 576px) {
+    .payment-page {
+      padding: 10px;
+    }
+    
+    .payment-form {
+      width: 100%;
+      padding: 15px;
+    }
+    
+    .StripeElement {
+      padding: 8px;
+    }
+  }
+  
+  /* Páginas de Administração Mobile */
+  @media (max-width: 768px) {
+    .edit-room-container {
+      margin: 20px 10px;
+      padding: 15px;
+    }
+    
+    .update-button,
+    .delete-button {
+      width: 100%;
+      margin: 5px 0;
+    }
+    
+    .bookings-container {
+      margin: 10px;
+      padding: 15px;
+    }
+    
+    .booking-results {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Footer Mobile */
+  @media (max-width: 576px) {
+    .my-footer {
+      position: static;
+      padding: 10px;
+      font-size: 12px;
+    }
+  }
+  
+  /* ==================== AJUSTES ESPECÍFICOS PARA ORIENTAÇÃO ==================== */
+  @media (max-width: 768px) and (orientation: landscape) {
+    .header-banner {
+      height: 100vh;
+    }
+    
+    .room-list-item {
+      flex-direction: row;
+    }
+    
+    .room-list-item-image {
+      width: 40%;
+      height: auto;
+    }
+  }
+  
+  /* ==================== DISPOSITIVOS MUITO PEQUENOS ==================== */
+  @media (max-width: 400px) {
+    .navbar {
+      padding: 10px;
+    }
+    
+    .header-banner h1 {
+      font-size: 20px;
+    }
+    
+    .header-banner h3 {
+      font-size: 14px;
+    }
+    
+    .search-field label {
+      font-size: 14px;
+    }
+    
+    .room-details h3 {
+      font-size: 16px;
+    }
+    
+    .book-now-button,
+    .edit-room-button {
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+  }
  
  
  
