@@ -96,16 +96,12 @@ export default class ApiService {
     }
 
     // ROOMS
-
-    static async addRoom(formData) {
-        const resp = await axios.post(`${this.BASE_URL}/rooms/add`, formData, {
-            headers: {
-                ...this.getHeader(),
-                'Content-Type': 'multipart/form-data'
-            }
+    static async addRoom(roomData) {
+        const resp = await axios.post(`${this.BASE_URL}/rooms/add`, roomData, {
+          headers: this.getHeader()
         });
         return resp.data;
-    }
+      }
 
     //para obter tipos de quarto
     static async getRoomTypes() {
@@ -132,15 +128,12 @@ export default class ApiService {
         return resp.data;
     }
 
-    static async updateRoom(formData) {
-        const resp = await axios.put(`${this.BASE_URL}/rooms/update`, formData, {
-            headers: {
-                ...this.getHeader(),
-                'Content-Type': 'multipart/form-data'
-            }
+    static async updateRoom(roomData) {
+        const resp = await axios.put(`${this.BASE_URL}/rooms/update`, roomData, {
+          headers: this.getHeader()
         });
         return resp.data;
-    }
+      }
 
     static async getAvailableRooms(checkInDate, checkOutDate, roomType) {
 

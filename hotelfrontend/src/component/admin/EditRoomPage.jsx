@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ApiService from "../../service/ApiService";
 
-
-
 const EditRoomPage = () => {
-
   const { roomId } = useParams();
   const navigate = useNavigate();
 
@@ -18,14 +15,11 @@ const EditRoomPage = () => {
     imageUrl: "",
   });
 
-
-  const [roomTypes, setRoomTypes] = useState([]); // Store room types
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [roomTypes, setRoomTypes] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [newImageUrl, setNewImageUrl] = useState("");
 
-  
   // Obter detalhes e tipos de quartos
   useEffect(() => {
     const fetchData = async () => {
@@ -39,9 +33,10 @@ const EditRoomPage = () => {
           description: roomResponse.room.description,
           imageUrl: roomResponse.room.imageUrl,
         });
+        setNewImageUrl(roomResponse.room.imageUrl);
 
         const typesResponse = await ApiService.getRoomTypes();
-        setRoomTypes(typesResponse); // Definir tipos de quartos disponíveis
+        setRoomTypes(typesResponse);
       } catch (error) {
         setError(error.response?.data?.message || error.message);
       }
@@ -57,31 +52,35 @@ const EditRoomPage = () => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
-    } else {
-      setFile(null);
-      setPreview(null);
+  const handleImageUrlChange = (e) => {
+    setNewImageUrl(e.target.value);
+  };
+
+  const validateImageUrl = (url) => {
+    if (!url) return false;
+    try {
+      new URL(url);
+      return url.startsWith("http://") || url.startsWith("https://");
+    } catch (e) {
+      return false;
     }
   };
 
   const handleUpdate = async () => {
+    if (!validateImageUrl(newImageUrl)) {
+      setError("Por favor, forneça uma URL de imagem válida (deve começar com http:// ou https://)");
+      setTimeout(() => setError(""), 5000);
+      return;
+    }
+
     try {
-      const formData = new FormData();
-      formData.append("type", roomDetails.type);
-      formData.append("pricePerNight", roomDetails.pricePerNight);
-      formData.append("description", roomDetails.description);
-      formData.append("capacity", roomDetails.capacity);
-      formData.append("id", roomId);
+      const payload = {
+        ...roomDetails,
+        imageUrl: newImageUrl,
+        id: roomId
+      };
 
-      if (file) {
-        formData.append("imageFile", file);
-      }
-
-      const result = await ApiService.updateRoom(formData);
+      const result = await ApiService.updateRoom(payload);
       if (result.status === 200) {
         setSuccess("Quarto atualizado com sucesso.");
         setTimeout(() => {
@@ -99,11 +98,11 @@ const EditRoomPage = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm("")) {
+    if (window.confirm("Você tem certeza que deseja deletar este quarto?")) {
       try {
         const result = await ApiService.deleteRoom(roomId);
         if (result.status === 200) {
-          setSuccess("Você quer deletar este quarto?");
+          setSuccess("Quarto deletado com sucesso.");
           setTimeout(() => {
             navigate("/admin/manage-rooms");
           }, 3000);
@@ -123,27 +122,33 @@ const EditRoomPage = () => {
       {success && <p className="success-message">{success}</p>}
       <div className="edit-room-form">
         <div className="form-group">
-          {preview ? (
+          {newImageUrl && (
             <img
-              src={preview}
-              alt="Prévia do quarto"
+              src={newImageUrl}
+              alt="Quarto"
               className="room-photo-preview"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "https://via.placeholder.com/300x200?text=Imagem+não+disponível";
+              }}
             />
-          ) : (
-            roomDetails.imageUrl && (
-              <img
-                src={roomDetails.imageUrl}
-                alt="Quarto"
-                className="room-photo"
-              />
-            )
           )}
-          <input type="file" name="file" onChange={handleFileChange} />
+          <label>Nova URL da Imagem</label>
+          <input
+            type="text"
+            value={newImageUrl}
+            onChange={handleImageUrlChange}
+            placeholder="Cole a nova URL da imagem"
+            className="form-control"
+          />
+          <small className="form-text text-muted">
+            A URL deve começar com http:// ou https://
+          </small>
         </div>
 
         <div className="form-group">
           <label>Tipo de Quarto</label>
-          <select name="type" value={roomDetails.type} onChange={handleChange}>
+          <select name="type" value={roomDetails.type} onChange={handleChange} className="form-control">
             <option value="">Selecione o Tipo</option>
             {roomTypes.map((type) => (
               <option key={type} value={type}>
@@ -160,6 +165,7 @@ const EditRoomPage = () => {
             name="pricePerNight"
             value={roomDetails.pricePerNight}
             onChange={handleChange}
+            className="form-control"
           />
         </div>
 
@@ -170,6 +176,7 @@ const EditRoomPage = () => {
             name="roomNumber"
             value={roomDetails.roomNumber}
             onChange={handleChange}
+            className="form-control"
           />
         </div>
 
@@ -180,6 +187,7 @@ const EditRoomPage = () => {
             name="capacity"
             value={roomDetails.capacity}
             onChange={handleChange}
+            className="form-control"
           />
         </div>
 
@@ -189,6 +197,8 @@ const EditRoomPage = () => {
             name="description"
             value={roomDetails.description}
             onChange={handleChange}
+            className="form-control"
+            rows="4"
           ></textarea>
         </div>
 
