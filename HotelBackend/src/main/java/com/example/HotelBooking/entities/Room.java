@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Room {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,9 +39,10 @@ public class Room {
     @Min(value = 1, message = "A capacidade deve ser de pelo menos 1")
     private Integer capacity;
 
-    private String description; //dados adicionais para o quarto
+    private String description; // dados adicionais para o quarto
 
-    private String imageUrl; //variável que guarda a foto da quarto
-
-
+    @Column(length = 2048)
+    @Pattern(regexp = "^(https?://).+",
+            message = "URL da imagem inválida. Deve começar com http:// ou https://")
+    private String imageUrl;
 }

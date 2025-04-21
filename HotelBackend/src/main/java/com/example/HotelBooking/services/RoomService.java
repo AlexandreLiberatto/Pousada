@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface RoomService {
-
     Response addRoom(RoomDTO roomDTO, MultipartFile imageFile);
     Response updateRoom(RoomDTO roomDTO, MultipartFile imageFile);
     Response getAllRooms();
