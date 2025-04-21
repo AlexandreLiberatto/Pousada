@@ -19,7 +19,7 @@ const AdminRegisterPage = () => {
 
     //handle inouyt change
     const handleInputChange = ({target: {name, value}}) => 
-        setFormData((prev) => ({... prev, [name]:value}));
+        setFormData((prev) => ({...prev, [name]:value}));
 
     //validate from field
     const isFormValid = Object.values(formData).every((field) => field.trim());

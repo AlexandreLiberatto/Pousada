@@ -32,7 +32,7 @@ const RoomDetailsPage = () => {
       }
     };
     fetchRoomDetails();
-  }, []);
+  }, [roomId]);
 
   //Calcular preço total
   const calculateTotalPrice = () => {

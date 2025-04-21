@@ -18,7 +18,7 @@ const RegisterPage = () => {
 
     //lidar com mudanças inouyt
     const handleInputChange = ({target: {name, value}}) => 
-        setFormData((prev) => ({... prev, [name]:value}));
+        setFormData((prev) => ({...prev, [name]:value}));
 
     //validar do campo
     const isFormValid = Object.values(formData).every((field) => field.trim());
