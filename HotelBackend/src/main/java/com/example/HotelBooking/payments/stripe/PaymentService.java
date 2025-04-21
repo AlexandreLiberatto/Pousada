@@ -105,7 +105,7 @@ public class PaymentService {
             bookingRepository.save(booking); //Atualizar a reserva
 
             notificationDTO.setSubject("Pagamento da reserva realizado com sucesso.");
-            notificationDTO.setBody("Parabéns! Seu pagamento pela reserva com a referência: " + bookingReference + "foi realizado com sucesso.");
+            notificationDTO.setBody("Parabéns! Seu pagamento pela reserva com a referência: " + bookingReference + " foi realizado com sucesso.");
             notificationService.sendEmail(notificationDTO); //enviar email
 
         }else {
