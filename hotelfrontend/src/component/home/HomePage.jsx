@@ -30,8 +30,6 @@ const HomePage = () => {
             <RoomSearch handSearchResult={handleSearchResult}/>
             <RoomResult roomSearchResults={roomSearchResult}/>
 
-            <h4><a className="view-rooms-home" href="/rooms">Todos os Quartos</a></h4>
-
             <h2 className="home-services">Serviços na <span className="phegon-color">Quinta do Ypuã</span></h2>
 
             {/* Selecionar Serviços */}
