@@ -1,25 +1,29 @@
-<br><br>
+<br>
 <img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="100%">
-<br><br>
+<br>
 
 <p align="center">
-  <a href="https://portfolio-3-d-olive.vercel.app/"><img src="https://readme-typing-svg.herokuapp.com/?lines=Sistema+de+Gerenciamento;&font=Poppins&center=true&width=900&height=120&color=58a6ff&vCenter=true&size=45%22"></a>
-</p>
-<p align="center">
-  <a href="https://portfolio-3-d-olive.vercel.app/"><img src="https://readme-typing-svg.herokuapp.com/?lines=De+Hopedagem;&font=Poppins&center=true&width=900&height=120&color=58a6ff&vCenter=true&size=45%22"></a>
-</p>
-<p align="center">
-  <a href="https://portfolio-3-d-olive.vercel.app/"><img src="https://readme-typing-svg.herokuapp.com/?lines=Quinta+do+Ypuã;&font=Poppins&center=true&width=900&height=120&color=58a6ff&vCenter=true&size=45%22"></a>
+  <a href="https://portfolio-3-d-olive.vercel.app/"><img src="https://readme-typing-svg.herokuapp.com/?lines=Gerenciamento+de+Hospedagem;&font=Poppins&center=true&width=900&height=120&color=58a6ff&vCenter=true&size=45%22"></a>
 </p>
 
-<br><br>
-<img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="100%">
-<br><br>
+<div align='center'>
+  <h3> 
+    Bem Vindo ao Projeto 
+    <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Hand%20gestures/Handshake.png" alt="Hand Shake Emoji" width="42" height="42" />
+  </h3>   
+</div>
 
+<br>
 
 ![Logo da Pousada](./img/logo192.JPEG)
 
-<br><br>
+<p align="center">
+  <a href="https://portfolio-3-d-olive.vercel.app/">
+    <img src="https://readme-typing-svg.herokuapp.com/?lines=Quinta+do+Ypuã;&font=Poppins&center=true&width=900&height=120&color=58a6ff&vCenter=true&size=40">
+  </a>
+</p>
+
+<br>
 <img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="100%">
 <br><br>
 
