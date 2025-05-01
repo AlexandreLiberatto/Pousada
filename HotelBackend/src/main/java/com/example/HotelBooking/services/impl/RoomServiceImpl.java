@@ -104,7 +104,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Response getRoomById(Long id) {
         Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Room not found"));
+                .orElseThrow(() -> new NotFoundException("Quarto não encontrado"));
 
         RoomDTO roomDTO = modelMapper.map(room, RoomDTO.class);
 
@@ -118,28 +118,28 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Response deleteRoom(Long id) {
         if (!roomRepository.existsById(id)) {
-            throw new NotFoundException("Room not found");
+            throw new NotFoundException("Quarto não encontrado");
         }
         roomRepository.deleteById(id);
 
         return Response.builder()
                 .status(200)
-                .message("Room Deleted Successfully")
+                .message("Quarto deletado com sucesso!")
                 .build();
     }
 
     @Override
     public Response getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, RoomType roomType) {
         if (checkInDate.isBefore(LocalDate.now())) {
-            throw new InvalidBookingStateAndDateException("check in date cannot be before today ");
+            throw new InvalidBookingStateAndDateException("A data de check-in não pode ser antes de hoje");
         }
 
         if (checkOutDate.isBefore(checkInDate)) {
-            throw new InvalidBookingStateAndDateException("check out date cannot be before check in date ");
+            throw new InvalidBookingStateAndDateException("A data de check-out não pode ser anterior à data de check-in ");
         }
 
         if (checkInDate.isEqual(checkOutDate)) {
-            throw new InvalidBookingStateAndDateException("check in date cannot be equal to check out date ");
+            throw new InvalidBookingStateAndDateException("A data de check-in não pode ser igual à data de check-out");
         }
 
         List<Room> roomList = roomRepository.findAvailableRooms(checkInDate, checkOutDate, roomType);
