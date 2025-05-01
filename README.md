@@ -27,19 +27,23 @@
 <img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="100%">
 <br><br>
 
-## Visão Geral
+## 💡 Visão Geral
 
-O Sistema de Gerenciamento de Hospedagem da Pousada Quinta do Ypuã é uma solução completa para reservas online, gerenciamento de quartos e administração de pagamentos. O sistema consiste em:
+O **Sistema de Gerenciamento de Hospedagem - Quinta do Ypuã** é uma solução digital desenvolvida para modernizar e otimizar o processo de reservas em pousadas. O projeto permite uma administração completa dos quartos, clientes, pagamentos e reservas, tanto para o hóspede quanto para os administradores da pousada. O sistema consiste em:
 
 - **Backend**: API RESTful desenvolvida em Spring Boot (Java)
 - **Frontend**: Aplicação web desenvolvida em React.js
 - **Banco de Dados**: PostgreSQL
 
-## Link de Acesso
 
-- **Projeto em Produção**: [Acesse o Site](https://quinta-do-ypua.netlify.app/home)
 
-## Tecnologias Utilizadas
+## 🌐 Link de Acesso
+
+- [🔗 Acesse o projeto em produção](https://quinta-do-ypua.netlify.app/home)
+
+---
+
+## 🛠️ Tecnologias Utilizadas
 
 ### Backend (Spring Boot)
 - Java 21
@@ -51,6 +55,9 @@ O Sistema de Gerenciamento de Hospedagem da Pousada Quinta do Ypuã é uma solu�
 - Lombok
 - Stripe API para pagamentos
 - Spring Mail
+- Swagger
+- Junit
+- Mokito
 
 ### Frontend (React.js)
 - React 18
@@ -59,9 +66,9 @@ O Sistema de Gerenciamento de Hospedagem da Pousada Quinta do Ypuã é uma solu�
 - CSS Modules
 - Responsive Design
 
-## Funcionalidades Principais
+## ⚙️ Funcionalidades Principais
 
-### Para Hóspedes
+### 👤 Para Hóspedes
 - ✅ Pesquisa de quartos disponíveis por datas
 - ✅ Cadastro e login de usuários
 - ✅ Reserva de quartos online
@@ -70,14 +77,14 @@ O Sistema de Gerenciamento de Hospedagem da Pousada Quinta do Ypuã é uma solu�
 - ✅ Edição de perfil
 - ✅ Recebimento de e-mails de confirmação
 
-### Para Administradores
+### 🔒 Para Administradores
 - ✅ CRUD completo de quartos
 - ✅ Gerenciamento de reservas
 - ✅ Controle de status de pagamentos
 - ✅ Dashboard administrativo
 - ✅ Cadastro de novos administradores
 
-## Estrutura do Projeto
+## 🧱 Estrutura do Projeto
 
 ### Backend (HotelBackend)
 ```
@@ -112,8 +119,9 @@ src/
 ├── service/                 # Serviços API e autenticação
 └── App.js                   # Componente principal
 ```
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Man%20Technologist.webp" alt="Man Technologist" width="25" height="25" /> Manual de Uso
 
-## Manual de Uso
+
 
 ### 1. Página Inicial
 ![Página Inicial](./img/home.png)
@@ -178,7 +186,11 @@ Acompanhe o status de suas reservas.
 
 Edite seu perfil e veja suas reservas.
 
-## Área Administrativa
+<br><br>
+<img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="100%">
+<br><br>
+
+## 🛡️ Área Administrativa
 
 ### 13. Dashboard Administrativo
 ![Tela Administrativa](./img/telaadministrador.png)
@@ -200,18 +212,126 @@ Atualize informações dos quartos.
 
 Controle o status das reservas e pagamentos.
 
-## Configuração e Deploy
 
-### Backend
-1. Configure as variáveis de ambiente no arquivo `.env`
-2. Build: `mvn clean package`
-3. Execute: `java -jar target/Pousada-0.0.1-SNAPSHOT.jar`
+## 🧭 Como Clonar e Executar o Projeto
 
-### Frontend
-1. Configure as variáveis de ambiente no arquivo `.env`
-2. Instale dependências: `npm install`
-3. Execute em desenvolvimento: `npm start`
-4. Build para produção: `npm run build`
+## 📋 Pré-requisitos
+
+- Java 21 (para o backend)
+- Maven (para o backend)
+- Node.js e npm (para o frontend)
+- PostgreSQL (banco de dados)
+- IntelliJ IDEA (recomendado para o backend)
+- VS Code (recomendado para o frontend)
+
+### 1️⃣ Clonando o Repositório
+
+```bash
+git clone https://github.com/AlexandreLiberatto/Pousada.git
+cd Pousada
+```
+
+A estrutura do projeto será:
+
+```
+Pousada/
+├── HotelBackend/       # Backend Spring Boot
+│   ├── src/
+│   ├── pom.xml
+│   ├── .env
+│   └── ...
+├── hotelfrontend/      # Frontend React.js
+│   ├── src/
+│   ├── package.json
+│   ├── .env
+│   └── ...
+└── README.md
+```
+
+### 2️⃣ Configuração do Banco de Dados
+
+1. Crie um banco de dados no PostgreSQL com o nome `hotel`:
+
+```sql
+CREATE DATABASE hotel;
+```
+
+2. Não é necessário criar tabelas manualmente - o Spring Boot fará isso automaticamente através do JPA/Hibernate
+
+### 3️⃣ Configuração do Backend (Spring Boot)
+
+1. Abra a pasta `HotelBackend` no IntelliJ IDEA
+2. Configure o arquivo `.env`
+
+
+
+3. Execute no terminal:
+
+```bash
+./mvnw install
+```
+
+4. Inicie a aplicação:
+   - Pela IDE (botão Run)
+   - Ou pelo terminal: `./mvnw spring-boot:run`
+
+O backend estará disponível em: http://localhost:9090
+
+### 4️⃣ Configuração do Frontend (React.js)
+
+1. Abra a pasta `hotelfrontend` no VS Code
+2. Crie/configure o arquivo `.env` com:
+
+```env
+REACT_APP_API_URL=http://localhost:9090
+```
+
+3. Instale as dependências:
+
+```bash
+npm install
+```
+
+4. Inicie o servidor de desenvolvimento:
+
+```bash
+npm start
+```
+
+O frontend abrirá automaticamente em: http://localhost:3000
+
+
+
+## 📝 Notas Importantes
+
+1. O sistema criará automaticamente:
+   - O usuário admin padrão
+   - As tabelas do banco de dados
+   - As estruturas básicas do sistema
+
+2. Para produção, altere:
+   - As credenciais do admin padrão
+   - As chaves JWT e de API
+   - As configurações de segurança
+
+
+<br><br>
+<img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="100%">
+<br><br>
+
+## Documentação da API
+
+![Gerenciar Reservas](./img/swagger1.png)
+
+![Gerenciar Reservas](./img/swagger2.png)
+
+- Disponível em: [🔗 Documentação dinamica](http://localhost:9090/swagger-ui.html) 
+
+- Obs: API precisa estar rodando localmente
+
+<br><br>
+<img src="https://user-images.githubusercontent.com/74038190/212284115-f47cd8ff-2ffb-4b04-b5bf-4d1c14c0247f.gif" width="100%">
+<br><br>
 
 ## Contribuição
 
@@ -225,7 +345,7 @@ Controle o status das reservas e pagamentos.
 
 Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
 
-<br>
+
 
 <div align='center'>
   <h3> <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/Objects/Mobile%20Phone%20With%20Arrow.webp" alt="Mobile Phone With Arrow" width="32" height="32" />
