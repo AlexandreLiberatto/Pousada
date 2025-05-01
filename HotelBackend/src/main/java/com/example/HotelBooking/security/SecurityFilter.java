@@ -41,7 +41,8 @@ public class SecurityFilter {
                                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/**", "/api/rooms/**", "api/bookings/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/rooms/**", "api/bookings/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll() // DOCUMENTAÇÃO SWAGGER
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
