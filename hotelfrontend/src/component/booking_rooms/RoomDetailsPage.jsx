@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ApiService from "../../service/ApiService";
 import { useNavigate, useParams } from "react-router-dom";
 import { DayPicker } from "react-day-picker";
+import { ptBR } from "date-fns/locale";
 
 const RoomDetailsPage = () => {
   const navigate = useNavigate();
@@ -120,25 +121,20 @@ const RoomDetailsPage = () => {
           className="book-now-button"
           onClick={() => setShowDatePicker(true)}
         >
-          Selecione ás Datas
+          Selecione as Datas
         </button>
         {showDatePicker && (
           <div className="date-picker-container">
             <div className="date-picker">
-              <label>Data de Entrada</label>
+              <label>Data de Entrada e Saída</label>
               <DayPicker
-                selected={checkInDate}
-                onDayClick={setCheckInDate}
-                disabled={(date) => checkOutDate && date > checkOutDate}
-              />
-            </div>
-
-            <div className="date-picker">
-              <label>Data de Saída</label>
-              <DayPicker
-                selected={checkOutDate}
-                onDayClick={setCheckOutDate}
-                disabled={(date) => checkInDate && date < checkInDate}
+                locale={ptBR}
+                mode="range"
+                selected={{ from: checkInDate, to: checkOutDate }}
+                onSelect={({ from, to }) => {
+                  setCheckInDate(from);
+                  setCheckOutDate(to);
+                }}
               />
             </div>
 
@@ -154,11 +150,11 @@ const RoomDetailsPage = () => {
             <h3>Prévia da reserva</h3>
             <p>
               <strong>Data de Entrada:</strong>{" "}
-              {checkInDate?.toLocaleDateString("en-CA")}
+              {checkInDate?.toLocaleDateString("pt-BR")}
             </p>
             <p>
               <strong>Data de Saída:</strong>{" "}
-              {checkOutDate?.toLocaleDateString("en-CA")}
+              {checkOutDate?.toLocaleDateString("pt-BR")}
             </p>
             <p>
               <strong>Dias totais de estadia:</strong> {totalDaysToStay}
