@@ -44,9 +44,22 @@ const FindBookingPage = () => {
                     <p><strong>Código da Reserva:</strong> {bookingDetails.bookingReference}</p>
                     <p><strong>Data de Entrada:</strong> {new Date(bookingDetails.checkInDate).toLocaleDateString('pt-BR')}</p>
                     <p><strong>Data de Saída:</strong> {new Date(bookingDetails.checkOutDate).toLocaleDateString('pt-BR')}</p>
-                    <p><strong>Status do Pagamento:</strong> {bookingDetails.paymentStatus === 'PAID' ? 'Pago' : 'Pendente'}</p>
+                    <p><strong>Status do Pagamento:</strong> {
+                        bookingDetails.paymentStatus === 'PENDING' ? 'Pendente' :
+                        bookingDetails.paymentStatus === 'PAID' ? 'Pago' :
+                        bookingDetails.paymentStatus === 'COMPLETED' ? 'Concluído' :
+                        bookingDetails.paymentStatus === 'FAILED' ? 'Falhou' :
+                        bookingDetails.paymentStatus === 'REFUNDED' ? 'Reembolsado' :
+                        bookingDetails.paymentStatus === 'REVERSED' ? 'Revertido' : bookingDetails.paymentStatus
+                    }</p>
                     <p><strong>Valor Total:</strong> R$ {bookingDetails.totalPrice.toFixed(2)}</p>
-                    <p><strong>Status da Reserva:</strong> {bookingDetails.bookingStatus === 'CONFIRMED' ? 'Confirmada' : 'Pendente'}</p>
+                    <p><strong>Status da Reserva:</strong> {
+                        bookingDetails.bookingStatus === 'CONFIRMED' ? 'Confirmada' :
+                        bookingDetails.bookingStatus === 'BOOKED' ? 'Reservada' :
+                        bookingDetails.bookingStatus === 'CHECKED_IN' ? 'Check-in Realizado' :
+                        bookingDetails.bookingStatus === 'CHECKED_OUT' ? 'Check-out Realizado' :
+                        bookingDetails.bookingStatus === 'CANCELLED' ? 'Cancelada' : bookingDetails.bookingStatus
+                    }</p>
 
                     <br />
                     <hr />
@@ -65,7 +78,12 @@ const FindBookingPage = () => {
                     <h3>Detalhes do Quarto</h3>
                     <div>
                         <p><strong>Número:</strong> {bookingDetails.room.roomNumber}</p>
-                        <p><strong>Tipo:</strong> {bookingDetails.room.type}</p>
+                        <p><strong>Tipo:</strong> {
+                            bookingDetails.room.type === 'SINGLE' ? 'Solteiro' :
+                            bookingDetails.room.type === 'DOUBLE' ? 'Duplo' :
+                            bookingDetails.room.type === 'TRIPLE' ? 'Triplo' :
+                            bookingDetails.room.type === 'SUIT' ? 'Suíte' : bookingDetails.room.type
+                        }</p>
                         <p><strong>Capacidade:</strong> {bookingDetails.room.capacity}</p>
                         <img src={bookingDetails.room.imageUrl} alt="Imagem do quarto" style={{ maxWidth: '100%', height: 'auto' }} />
                     </div>

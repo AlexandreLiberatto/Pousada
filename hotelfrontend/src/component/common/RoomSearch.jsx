@@ -150,13 +150,32 @@ return (
         {/*CAMPOS DE SELEÇÃO DO TIPO DE QUARTO */}
         <div className="search-field">
           <label>Tipo de Quarto</label>
-          <select value={roomType} onChange={(e)=> setRoomType(e.target.value)}>
-              <option disabled value="">Selecione o Tipo de Quarto</option>
-              {roomTypes.map((roomType) =>(
-                  <option value={roomType} key={roomType}>
-                      {roomType}
-                  </option>
-              ))}
+          <select value={roomType} onChange={(e) => setRoomType(e.target.value)}>
+            <option disabled value="">Selecione o Tipo de Quarto</option>
+            {roomTypes.map((roomType) => {
+              let roomTypeLabel;
+              switch (roomType) {
+                case "SINGLE":
+                  roomTypeLabel = "Solteiro";
+                  break;
+                case "DOUBLE":
+                  roomTypeLabel = "Duplo";
+                  break;
+                case "TRIPLE":
+                  roomTypeLabel = "Triplo";
+                  break;
+                case "SUIT":
+                  roomTypeLabel = "Suíte";
+                  break;
+                default:
+                  roomTypeLabel = roomType;
+              }
+              return (
+                <option value={roomType} key={roomType}>
+                  {roomTypeLabel}
+                </option>
+              );
+            })}
           </select>
         </div>
   

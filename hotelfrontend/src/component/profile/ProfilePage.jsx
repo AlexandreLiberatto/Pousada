@@ -56,19 +56,78 @@ const ProfilePage = () => {
                 <h3>Histórico de Reservas</h3>
                 <div className="booking-list">
                     {bookings && bookings.length > 0 ? (
-                        bookings.map((booking) => (
-                            <div key={booking.id} className="booking-item">
-                                <p><strong>Código da Reserva:</strong> {booking.bookingReference}</p>
-                                <p><strong>Data de Entrada:</strong> {new Date(booking.checkInDate).toLocaleDateString('pt-BR')}</p>
-                                <p><strong>Data de Saída:</strong> {new Date(booking.checkOutDate).toLocaleDateString('pt-BR')}</p>
-                                <p><strong>Status do Pagamento:</strong> {booking.paymentStatus}</p>
-                                <p><strong>Status da Reserva:</strong> {booking.bookingStatus}</p>
-                                <p><strong>Valor Total:</strong> R$ {booking.totalPrice.toFixed(2)}</p>
-                                <p><strong>Número do Quarto:</strong> {booking.room.roomNumber}</p>
-                                <p><strong>Tipo do Quarto:</strong> {booking.room.type}</p>
-                                <img src={booking.room.imageUrl} alt="Room" className="room-photo" />
-                            </div>
-                        ))
+                        bookings.map((booking) => {
+                            let paymentStatus;
+                            switch (booking.paymentStatus) {
+                                case "PENDING":
+                                    paymentStatus = "Pendente";
+                                    break;
+                                case "COMPLETED":
+                                    paymentStatus = "Concluído";
+                                    break;
+                                case "FAILED":
+                                    paymentStatus = "Falhou";
+                                    break;
+                                case "REFUNDED":
+                                    paymentStatus = "Reembolsado";
+                                    break;
+                                case "REVERSED":
+                                    paymentStatus = "Revertido";
+                                    break;
+                                default:
+                                    paymentStatus = booking.paymentStatus;
+                            }
+
+                            let bookingStatus;
+                            switch (booking.bookingStatus) {
+                                case "BOOKED":
+                                    bookingStatus = "Reservado";
+                                    break;
+                                case "CHECKED_IN":
+                                    bookingStatus = "Check-in Realizado";
+                                    break;
+                                case "CHECKED_OUT":
+                                    bookingStatus = "Check-out Realizado";
+                                    break;
+                                case "CANCELLED":
+                                    bookingStatus = "Cancelado";
+                                    break;
+                                default:
+                                    bookingStatus = booking.bookingStatus;
+                            }
+
+                            let roomType;
+                            switch (booking.room.type) {
+                                case "SINGLE":
+                                    roomType = "Solteiro";
+                                    break;
+                                case "DOUBLE":
+                                    roomType = "Duplo";
+                                    break;
+                                case "TRIPLE":
+                                    roomType = "Triplo";
+                                    break;
+                                case "SUIT":
+                                    roomType = "Suíte";
+                                    break;
+                                default:
+                                    roomType = booking.room.type;
+                            }
+
+                            return (
+                                <div key={booking.id} className="booking-item">
+                                    <p><strong>Código da Reserva:</strong> {booking.bookingReference}</p>
+                                    <p><strong>Data de Entrada:</strong> {new Date(booking.checkInDate).toLocaleDateString('pt-BR')}</p>
+                                    <p><strong>Data de Saída:</strong> {new Date(booking.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                                    <p><strong>Status do Pagamento:</strong> {paymentStatus}</p>
+                                    <p><strong>Status da Reserva:</strong> {bookingStatus}</p>
+                                    <p><strong>Valor Total:</strong> R$ {booking.totalPrice.toFixed(2)}</p>
+                                    <p><strong>Número do Quarto:</strong> {booking.room.roomNumber}</p>
+                                    <p><strong>Tipo do Quarto:</strong> {roomType}</p>
+                                    <img src={booking.room.imageUrl} alt="Room" className="room-photo" />
+                                </div>
+                            );
+                        })
                     ) : (
                         <p>Nenhuma reserva encontrada.</p>
                     )}

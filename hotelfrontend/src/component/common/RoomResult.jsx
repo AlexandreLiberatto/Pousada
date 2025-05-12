@@ -14,31 +14,49 @@ const RoomResult = ({roomSearchResults}) => {
         <section className="room-results">
             { roomSearchResults && roomSearchResults.length > 0 && (
             <div className="room-list">
-                {roomSearchResults.map(room=>(
-                    <div className="room-list-item" key={room.id}>
-                        <img className="room-list-item-image" src={room.imageUrl} alt={room.roomNumber} />
-                        <div className="room-details">
-                            <h3>{room.type}</h3>
-                            <p>Preço: {formatPrice(room.pricePerNight)}/Diária</p>
-                            <p>Descrição: {room.description}</p>
-                        </div>
+                {roomSearchResults.map(room => {
+                    let roomTypeLabel;
+                    switch (room.type) {
+                        case "SINGLE":
+                            roomTypeLabel = "Solteiro";
+                            break;
+                        case "DOUBLE":
+                            roomTypeLabel = "Duplo";
+                            break;
+                        case "TRIPLE":
+                            roomTypeLabel = "Triplo";
+                            break;
+                        case "SUIT":
+                            roomTypeLabel = "Suíte";
+                            break;
+                        default:
+                            roomTypeLabel = room.type;
+                    }
+                    return (
+                        <div className="room-list-item" key={room.id}>
+                            <img className="room-list-item-image" src={room.imageUrl} alt={room.roomNumber} />
+                            <div className="room-details">
+                                <h3>{roomTypeLabel}</h3>
+                                <p>Preço: {formatPrice(room.pricePerNight)}/Diária</p>
+                                <p>Descrição: {room.description}</p>
+                            </div>
 
-                        <div className="book-now-div">
-                            {isAdmin ? (
-                                <button className="edit-room-button" 
-                                onClick={() => navigate(`/admin/edit-room/${room.id}`)}>
-                                        Editar Quarto
-                                </button>
-                            ): (
-                                <button className="book-now-button" 
-                                onClick={() => navigate(`/room-details/${room.id}`)}>
-                                    Reservar    
-                                </button>
-
-                            )}
+                            <div className="book-now-div">
+                                {isAdmin ? (
+                                    <button className="edit-room-button" 
+                                    onClick={() => navigate(`/admin/edit-room/${room.id}`)}>
+                                            Editar Quarto
+                                    </button>
+                                ) : (
+                                    <button className="book-now-button" 
+                                    onClick={() => navigate(`/room-details/${room.id}`)}>
+                                        Reservar    
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
             )}
         </section>

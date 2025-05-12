@@ -112,7 +112,12 @@ const RoomDetailsPage = () => {
       <h2>Detalhes do Quarto</h2>
       <img src={imageUrl} alt={type} className="room-details-image" />
       <div className="room-details-info">
-        <h3>{type}</h3>
+        <h3>{
+          type === 'SINGLE' ? 'Solteiro' :
+          type === 'DOUBLE' ? 'Duplo' :
+          type === 'TRIPLE' ? 'Triplo' :
+          type === 'SUIT' ? 'Suíte' : type
+        }</h3>
         <p>Número: {roomNumber}</p>
         <p>Capacidade: {capacity}</p>
         <p>Preço: {formatPrice(pricePerNight)} / diária</p>
@@ -153,12 +158,10 @@ const RoomDetailsPage = () => {
           <div className="booking-preview">
             <h3>Prévia da reserva</h3>
             <p>
-              <strong>Data de Entrada:</strong>{" "}
-              {checkInDate?.toLocaleDateString("pt-BR")}
+              <strong>Data de Entrada:</strong> {checkInDate?.toLocaleDateString("pt-BR")}
             </p>
             <p>
-              <strong>Data de Saída:</strong>{" "}
-              {checkOutDate?.toLocaleDateString("pt-BR")}
+              <strong>Data de Saída:</strong> {checkOutDate?.toLocaleDateString("pt-BR")}
             </p>
             <p>
               <strong>Dias totais de estadia:</strong> {totalDaysToStay}
