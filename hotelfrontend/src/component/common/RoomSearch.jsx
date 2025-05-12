@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ApiService from "../../service/ApiService";
 import { DayPicker } from "react-day-picker";
+import { ptBR } from "date-fns/locale";
 
 const RoomSearch = ({ handSearchResult }) => {
   const [startDate, setStartDate] = useState(null);
@@ -106,6 +107,7 @@ return (
           {isStartDatePickerVisible && (
             <div className="datepicker-container" ref={startDateRef}>
               <DayPicker
+                locale={ptBR}
                 selected={startDate}
                 onDayClick={(date) => {
                   setStartDate(date);
@@ -133,6 +135,7 @@ return (
           {isEndDatePickerVisible && (
             <div className="datepicker-container" ref={endDateRef}>
               <DayPicker
+                locale={ptBR}
                 selected={endDate}
                 onDayClick={(date) => {
                   setEndtDate(date);
