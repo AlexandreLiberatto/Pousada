@@ -86,9 +86,9 @@ const EditBookingPage = () => {
         <div className="booking-details">
           <h3>Detalhes da Reserva</h3>
           <p>Código de Confirmação: {bookingDetails.bookingReference}</p>
-          <p>Data de Entrada: {bookingDetails.checkInDate}</p>
-          <p>Data de Saída: {bookingDetails.checkOutDate}</p>
-          <p>Preço Total: {bookingDetails.totalPrice}</p>
+          <p>Data de Entrada: {new Date(bookingDetails.checkInDate).toLocaleDateString('pt-BR')}</p>
+          <p>Data de Saída: {new Date(bookingDetails.checkOutDate).toLocaleDateString('pt-BR')}</p>
+          <p>Preço Total: R$ {bookingDetails.totalPrice.toFixed(2)}</p>
           <p>Status de Pagamento: {bookingDetails.paymentStatus}</p>
           <p>Status da Reserva: {bookingDetails.bookingStatus}</p>
 
@@ -109,8 +109,8 @@ const EditBookingPage = () => {
           <h3>Detalhes da Reserva</h3>
           <div>
             <p> Tipo: {bookingDetails.room.type}</p>
-            <p> Preço por Diária: ${bookingDetails.room.pricePerNight}</p>
-            <p> Capacidade: ${bookingDetails.room.capacity}</p>
+            <p> Preço por Diária: R$ {bookingDetails.room.pricePerNight.toFixed(2)}</p>
+            <p> Capacidade: {bookingDetails.room.capacity} pessoa(s)</p>
             <p> Descrição: {bookingDetails.room.description}</p>
             <img src={bookingDetails.room.imageUrl} alt="" height="200" />
           </div>

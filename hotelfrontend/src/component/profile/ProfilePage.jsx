@@ -38,29 +38,29 @@ const ProfilePage = () => {
         <div className="profile-page">
             {user && <h2>Bem Vindo, {user.firstName}</h2>}
             <div className="profile-actions">
-                <button className="edit-profile-button" onClick={handleEditProfile}>Editar Perfil</button>
+                <button className="edit-profile-button" onClick={handleEditProfile}>Perfil</button>
                 <button className="logout-button" onClick={handleLogout}>Sair</button>
             </div>
             {error && <p className="error-message">{error}</p>}
             {user && (
                 <div className="profile-details">
-                    <h3>Detalhes do Meu Perfil</h3>
+                    <h3>Detalhes do Perfil</h3>
                     <p><strong>E-mail:</strong> {user.email}</p>
                     <p><strong>Número de Telefone:</strong> {user.phoneNumber}</p>
                 </div>
             )}
             <div className="bookings-section">
-                <h3>Meu Histórico de Reservas</h3>
+                <h3>Histórico de Reservas</h3>
                 <div className="booking-list">
                     {bookings && bookings.length > 0 ? (
                         bookings.map((booking) => (
                             <div key={booking.id} className="booking-item">
                                 <p><strong>Código da Reserva:</strong> {booking.bookingReference}</p>
-                                <p><strong>Data de Entrada:</strong> {booking.checkInDate}</p>
-                                <p><strong>Data de Saída:</strong> {booking.checkOutDate}</p>
+                                <p><strong>Data de Entrada:</strong> {new Date(booking.checkInDate).toLocaleDateString('pt-BR')}</p>
+                                <p><strong>Data de Saída:</strong> {new Date(booking.checkOutDate).toLocaleDateString('pt-BR')}</p>
                                 <p><strong>Status do Pagamento:</strong> {booking.paymentStatus}</p>
                                 <p><strong>Status da Reserva:</strong> {booking.bookingStatus}</p>
-                                <p><strong>Valor Total:</strong> {booking.totalPrice}</p>
+                                <p><strong>Valor Total:</strong> R$ {booking.totalPrice.toFixed(2)}</p>
                                 <p><strong>Número do Quarto:</strong> {booking.room.roomNumber}</p>
                                 <p><strong>Tipo do Quarto:</strong> {booking.room.type}</p>
                                 <img src={booking.room.imageUrl} alt="Room" className="room-photo" />

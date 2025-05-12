@@ -35,7 +35,7 @@ const EditProfilePage = () => {
 
     return (
         <div className="edit-profile-page">
-            <h2>Ver Perfil</h2>
+            <h2>Perfil</h2>
             {error && <p className="error-message">{error}</p>}
             {user && (
                 <div className="profile-details">
@@ -43,7 +43,7 @@ const EditProfilePage = () => {
                     <p><strong>Sobrenome:</strong> {user.lastName}</p>
                     <p><strong>E-mail:</strong> {user.email}</p>
                     <p><strong>Número de Telefone:</strong> {user.phoneNumber}</p>
-                    <button className="delete-profile-button" onClick={handleDeleteProfile}>Excluir Minha Conta</button>
+                    <button className="delete-profile-button" onClick={handleDeleteProfile}>Excluir Conta</button>
                 </div>
             )}
         </div>
