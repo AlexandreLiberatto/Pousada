@@ -50,6 +50,11 @@ const RoomDetailsPage = () => {
     return room?.pricePerNight * totalDays || 0;
   };
 
+  // Função para formatar preço
+  const formatPrice = (price) => {
+    return price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
   //lidar com a confirmação da reserva
   const handleConfirmation = () => {
     if (!checkInDate || !checkOutDate) {
@@ -97,7 +102,6 @@ const RoomDetailsPage = () => {
 
   const { roomNumber, type, pricePerNight, capacity, description, imageUrl } = room;
 
-  
   return (
     <div className="room-details-booking">
       {/*Mensagens de sucesso e erro*/}
@@ -111,7 +115,7 @@ const RoomDetailsPage = () => {
         <h3>{type}</h3>
         <p>Número: {roomNumber}</p>
         <p>Capacidade: {capacity}</p>
-        <p>Preço: R$:{pricePerNight} / diária</p>
+        <p>Preço: {formatPrice(pricePerNight)} / diária</p>
         <p>{description}</p>
       </div>
 
@@ -139,7 +143,7 @@ const RoomDetailsPage = () => {
             </div>
 
             <button className="confirm-booking" onClick={handleConfirmation}>
-            Prosseguir
+              Prosseguir
             </button>
           </div>
         )}
@@ -160,7 +164,7 @@ const RoomDetailsPage = () => {
               <strong>Dias totais de estadia:</strong> {totalDaysToStay}
             </p>
             <p>
-              <strong>Preço Total:</strong> R${totalPrice}
+              <strong>Preço Total:</strong> {formatPrice(totalPrice)}
             </p>
             <button onClick={acceptBooking}>Confirmar e Reservar</button>
             <button
