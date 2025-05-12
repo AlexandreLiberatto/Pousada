@@ -89,8 +89,19 @@ const EditBookingPage = () => {
           <p>Data de Entrada: {new Date(bookingDetails.checkInDate).toLocaleDateString('pt-BR')}</p>
           <p>Data de Saída: {new Date(bookingDetails.checkOutDate).toLocaleDateString('pt-BR')}</p>
           <p>Preço Total: R$ {bookingDetails.totalPrice.toFixed(2)}</p>
-          <p>Status de Pagamento: {bookingDetails.paymentStatus}</p>
-          <p>Status da Reserva: {bookingDetails.bookingStatus}</p>
+          <p>Status de Pagamento: {
+            bookingDetails.paymentStatus === 'PENDING' ? 'Pendente' :
+            bookingDetails.paymentStatus === 'COMPLETED' ? 'Concluído' :
+            bookingDetails.paymentStatus === 'FAILED' ? 'Falhou' :
+            bookingDetails.paymentStatus === 'REFUNDED' ? 'Reembolsado' :
+            bookingDetails.paymentStatus === 'REVERSED' ? 'Revertido' : bookingDetails.paymentStatus
+          }</p>
+          <p>Status da Reserva: {
+            bookingDetails.bookingStatus === 'BOOKED' ? 'Reservado' :
+            bookingDetails.bookingStatus === 'CHECKED_IN' ? 'Check-in Realizado' :
+            bookingDetails.bookingStatus === 'CHECKED_OUT' ? 'Check-out Realizado' :
+            bookingDetails.bookingStatus === 'CANCELLED' ? 'Cancelado' : bookingDetails.bookingStatus
+          }</p>
 
           <br />
           <hr />
@@ -127,10 +138,10 @@ const EditBookingPage = () => {
               onChange={handleChange}
             >
               <option value="">Selecione</option>
-              <option value="BOOKED">RESERVADO</option>
-              <option value="CANCELLED">CANCELADO</option>
-              <option value="CHECKED_IN">ENTRADA OK</option>
-              <option value="CHECKED_OUT">SAÍDA OK</option>
+              <option value="BOOKED">Reservado</option>
+              <option value="CANCELLED">Cancelado</option>
+              <option value="CHECKED_IN">Check-in Realizado</option>
+              <option value="CHECKED_OUT">Check-out Realizado</option>
             </select>
           </div>
 
@@ -143,11 +154,11 @@ const EditBookingPage = () => {
               onChange={handleChange}
             >
               <option value="">Selecione</option>
-              <option value="PENDING">PENDENTE</option>
-              <option value="COMPLETED">COMPLETADO</option>
-              <option value="FAILED">FALHADO</option>
-              <option value="REFUNDED">REEMBOLSADO</option>
-              <option value="REVERSED">REVERTIDO</option>
+              <option value="PENDING">Pendente</option>
+              <option value="COMPLETED">Concluído</option>
+              <option value="FAILED">Falhou</option>
+              <option value="REFUNDED">Reembolsado</option>
+              <option value="REVERSED">Revertido</option>
             </select>
           </div>
 

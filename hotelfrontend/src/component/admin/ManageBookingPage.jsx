@@ -79,22 +79,67 @@ const ManageBookingsPage = () => {
 
       {/* Exibir reservas para a página atual */}
       <div className="booking-results">
-        {currentBookings.map((booking) => (
-          <div key={booking.id} className="booking-result-item">
-            <p><strong>Código da Reserva:</strong> {booking.bookingReference}</p>
-            <p><strong>Data de Entrada:</strong> {booking.checkInDate}</p>
-            <p><strong>Data de Saída:</strong> {booking.checkOutDate}</p>
-            <p><strong>Preço Total:</strong> {booking.totalPrice}</p>
-            <p><strong>Status do Pagamento:</strong> {booking.paymentStatus}</p>
-            <p><strong>Status da Reserva:</strong> {booking.bookingStatus}</p>
-            <button
-              className="edit-room-button"
-              onClick={() => navigate(`/admin/edit-booking/${booking.bookingReference}`)}
-            >
-              Gerenciar Reserva
-            </button>
-          </div>
-        ))}
+        {/* Traduzir os status de pagamento e reserva para português do Brasil */}
+        {currentBookings.map((booking) => {
+          let paymentStatus;
+          switch (booking.paymentStatus) {
+            case "PENDING":
+              paymentStatus = "Pendente";
+              break;
+            case "PAID":
+              paymentStatus = "Pago";
+              break;
+            case "COMPLETED":
+              paymentStatus = "Concluído";
+              break;
+            case "FAILED":
+              paymentStatus = "Falhou";
+              break;
+            case "REFUNDED":
+              paymentStatus = "Reembolsado";
+              break;
+            case "REVERSED":
+              paymentStatus = "Revertido";
+              break;
+            default:
+              paymentStatus = booking.paymentStatus;
+          }
+
+          let bookingStatus;
+          switch (booking.bookingStatus) {
+            case "BOOKED":
+              bookingStatus = "Reservado";
+              break;
+            case "CHECKED_IN":
+              bookingStatus = "Check-in Realizado";
+              break;
+            case "CHECKED_OUT":
+              bookingStatus = "Check-out Realizado";
+              break;
+            case "CANCELLED":
+              bookingStatus = "Cancelado";
+              break;
+            default:
+              bookingStatus = booking.bookingStatus;
+          }
+
+          return (
+            <div key={booking.id} className="booking-result-item">
+              <p><strong>Código da Reserva:</strong> {booking.bookingReference}</p>
+              <p><strong>Data de Entrada:</strong> {new Date(booking.checkInDate).toLocaleDateString('pt-BR')}</p>
+              <p><strong>Data de Saída:</strong> {new Date(booking.checkOutDate).toLocaleDateString('pt-BR')}</p>
+              <p><strong>Preço Total:</strong> R$ {booking.totalPrice.toFixed(2)}</p>
+              <p><strong>Status do Pagamento:</strong> {paymentStatus}</p>
+              <p><strong>Status da Reserva:</strong> {bookingStatus}</p>
+              <button
+                className="edit-room-button"
+                onClick={() => navigate(`/admin/edit-booking/${booking.bookingReference}`)}
+              >
+                Gerenciar Reserva
+              </button>
+            </div>
+          );
+        })}
       </div>
 
       {/*Componente de paginação */}

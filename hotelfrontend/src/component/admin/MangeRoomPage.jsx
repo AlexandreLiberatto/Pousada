@@ -73,11 +73,30 @@ const ManageRoomPage = () => {
               <label>Filtra Por Tipo:</label>
               <select onChange={handleRoomTypeChange}>
                 <option value="">Todos</option>
-                {roomTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
+                {roomTypes.map((type) => {
+                  let translatedType;
+                  switch (type) {
+                    case "SINGLE":
+                      translatedType = "Solteiro";
+                      break;
+                    case "DOUBLE":
+                      translatedType = "Duplo";
+                      break;
+                    case "TRIPLE":
+                      translatedType = "Triplo";
+                      break;
+                    case "SUIT":
+                      translatedType = "Suíte";
+                      break;
+                    default:
+                      translatedType = type;
+                  }
+                  return (
+                    <option key={type} value={type}>
+                      {translatedType}
+                    </option>
+                  );
+                })}
               </select>
               <button className='add-room-button' onClick={() => navigate('/admin/add-room')}>
                 Adicionar Quarto

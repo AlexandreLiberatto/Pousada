@@ -152,11 +152,30 @@ const AddRoomPage = () => {
             className="form-control"
           >
             <option value="">Selecione o Tipo de Quarto</option>
-            {roomTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
+            {roomTypes.map((type) => {
+              let translatedType;
+              switch (type) {
+                case "SINGLE":
+                  translatedType = "Solteiro";
+                  break;
+                case "DOUBLE":
+                  translatedType = "Duplo";
+                  break;
+                case "TRIPLE":
+                  translatedType = "Triplo";
+                  break;
+                case "SUIT":
+                  translatedType = "Suíte";
+                  break;
+                default:
+                  translatedType = type;
+              }
+              return (
+                <option key={type} value={type}>
+                  {translatedType}
+                </option>
+              );
+            })}
             <option value="outro">Outro (Novo Tipo)</option>
           </select>
         </div>
