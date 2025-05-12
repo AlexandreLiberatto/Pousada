@@ -24,38 +24,39 @@ const FindBookingPage = () => {
     };
 
     return (
-        <div className="find-booking-page">
+        <div className="find-booking-page" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', minHeight: '100vh', paddingTop: '50px' }}>
             <h2>Encontrar Reserva</h2>
-            <div className="search-container">
+            <div className="search-container" style={{ textAlign: 'center', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <input
                     required
                     type="text"
                     placeholder="Insira o código de confirmação da sua reserva"
                     value={confirmationCode}
                     onChange={(e) => setConfirmationCode(e.target.value)}
+                    style={{ padding: '10px', width: '300px' }}
                 />
-                <button onClick={handleSearch}>Encontrar</button>
+                <button onClick={handleSearch} style={{ padding: '10px 20px', height: '42px' }}>Encontrar</button>
             </div>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
             {bookingDetails && (
-                <div className="booking-details">
+                <div className="booking-details" style={{ textAlign: 'center', marginTop: '20px' }}>
                     <h3>Detalhes da Reserva</h3>
-                    <p>Código da Reserva: {bookingDetails.bookingReference}</p>
-                    <p>Data de Entrada: {bookingDetails.checkInDate}</p>
-                    <p>Data de Saída: {bookingDetails.checkOutDate}</p>
-                    <p>Status do Pagamento: {bookingDetails.paymentStatus}</p>
-                    <p>Valor total: {bookingDetails.totalPrice}</p>
-                    <p>Status da Reserva: {bookingDetails.bookingStatus}</p>
+                    <p><strong>Código da Reserva:</strong> {bookingDetails.bookingReference}</p>
+                    <p><strong>Data de Entrada:</strong> {new Date(bookingDetails.checkInDate).toLocaleDateString('pt-BR')}</p>
+                    <p><strong>Data de Saída:</strong> {new Date(bookingDetails.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                    <p><strong>Status do Pagamento:</strong> {bookingDetails.paymentStatus === 'PAID' ? 'Pago' : 'Pendente'}</p>
+                    <p><strong>Valor Total:</strong> R$ {bookingDetails.totalPrice.toFixed(2)}</p>
+                    <p><strong>Status da Reserva:</strong> {bookingDetails.bookingStatus === 'CONFIRMED' ? 'Confirmada' : 'Pendente'}</p>
 
                     <br />
                     <hr />
                     <br />
                     <h3>Detalhes do Usuário</h3>
                     <div>
-                        <p> Nome: {bookingDetails.user.firstName}</p>
-                        <p> Sobrenome: {bookingDetails.user.lastName}</p>
-                        <p> E-mail: {bookingDetails.user.email}</p>
-                        <p> Número de Telefone: {bookingDetails.user.phoneNumber}</p>
+                        <p><strong>Nome:</strong> {bookingDetails.user.firstName}</p>
+                        <p><strong>Sobrenome:</strong> {bookingDetails.user.lastName}</p>
+                        <p><strong>E-mail:</strong> {bookingDetails.user.email}</p>
+                        <p><strong>Número de Telefone:</strong> {bookingDetails.user.phoneNumber}</p>
                     </div>
 
                     <br />
@@ -63,10 +64,10 @@ const FindBookingPage = () => {
                     <br />
                     <h3>Detalhes do Quarto</h3>
                     <div>
-                        <p> Número: {bookingDetails.room.roomNumber}</p>
-                        <p> Tipo: {bookingDetails.room.type}</p>
-                        <p> Capacidade: {bookingDetails.room.capacity}</p>
-                        <img src={bookingDetails.room.imageUrl} alt="" sizes="" srcSet="" />
+                        <p><strong>Número:</strong> {bookingDetails.room.roomNumber}</p>
+                        <p><strong>Tipo:</strong> {bookingDetails.room.type}</p>
+                        <p><strong>Capacidade:</strong> {bookingDetails.room.capacity}</p>
+                        <img src={bookingDetails.room.imageUrl} alt="Imagem do quarto" style={{ maxWidth: '100%', height: 'auto' }} />
                     </div>
                 </div>
             )}
