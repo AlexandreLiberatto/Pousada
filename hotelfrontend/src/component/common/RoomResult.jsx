@@ -2,10 +2,13 @@ import React from "react";
 import ApiService from "../../service/ApiService";
 import { useNavigate } from "react-router-dom";
 
-
 const RoomResult = ({roomSearchResults}) => {
     const navigate = useNavigate();
     const isAdmin = ApiService.isAdmin();
+
+    const formatPrice = (price) => {
+        return price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    };
 
     return (
         <section className="room-results">
@@ -16,7 +19,7 @@ const RoomResult = ({roomSearchResults}) => {
                         <img className="room-list-item-image" src={room.imageUrl} alt={room.roomNumber} />
                         <div className="room-details">
                             <h3>{room.type}</h3>
-                            <p>Preço: R$:{room.pricePerNight}/Diária</p>
+                            <p>Preço: {formatPrice(room.pricePerNight)}/Diária</p>
                             <p>Descrição: {room.description}</p>
                         </div>
 
