@@ -1594,6 +1594,12 @@
   .navbar-ul li a {
       display: block;
   }
+
+  .logout-button {
+    width: auto; 
+    padding: 10px 20px; 
+    margin: 10px auto; 
+  }
  
  
  }
@@ -2411,6 +2417,7 @@
       width: 40%;
       height: auto;
     }
+    
   }
   
   /* ==================== DISPOSITIVOS MUITO PEQUENOS ==================== */
@@ -2442,7 +2449,7 @@
     }
   }
 
-  
+
 
 
 
