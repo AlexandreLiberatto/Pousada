@@ -38,6 +38,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
                    OR CAST(r.pricePerNight AS string) LIKE %:searchParam%
                    OR CAST(r.capacity AS string) LIKE %:searchParam%
                    OR LOWER(r.description) LIKE LOWER(CONCAT('%', :searchParam, '%'))
+                   OR LOWER(r.title) LIKE LOWER(CONCAT('%', :searchParam, '%'))
             """)
     List<Room> searchRooms(@Param("searchParam") String searchParam);
 

@@ -38,6 +38,8 @@ public class RoomDTO {
 
     private String description; // dados adicionais para o quarto
 
+    private String title; // titulo para os quartos
+
     @Pattern(regexp = "^(https?://).+",
             message = "URL da imagem inválida. Deve começar com http:// ou https://")
     private String imageUrl;

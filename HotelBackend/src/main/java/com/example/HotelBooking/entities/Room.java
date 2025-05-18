@@ -41,6 +41,8 @@ public class Room {
 
     private String description; // dados adicionais para o quarto
 
+    private String title; // titulo para os quartos
+
     @Column(length = 2048)
     @Pattern(regexp = "^(https?://).+",
             message = "URL da imagem inválida. Deve começar com http:// ou https://")
