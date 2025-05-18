@@ -48,7 +48,7 @@
 
 /* Ícone de indígena estilizado */
 .navbar-brand a::before {
-  content: '🛖'; /* Ícone de indígena */
+  content: '⛺'; /* Ícone de indígena */
   display: inline-block;
   font-size: 28px;
   transition: transform 0.3s ease;
