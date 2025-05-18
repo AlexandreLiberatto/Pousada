@@ -13,6 +13,7 @@ const EditRoomPage = () => {
     capacity: "",
     description: "",
     imageUrl: "",
+    title: "", // Novo campo Título
   });
 
   const [roomTypes, setRoomTypes] = useState([]);
@@ -32,6 +33,7 @@ const EditRoomPage = () => {
           capacity: roomResponse.room.capacity,
           description: roomResponse.room.description,
           imageUrl: roomResponse.room.imageUrl,
+          title: roomResponse.room.title || "", // Novo campo Título
         });
         setNewImageUrl(roomResponse.room.imageUrl);
 
@@ -77,7 +79,8 @@ const EditRoomPage = () => {
       const payload = {
         ...roomDetails,
         imageUrl: newImageUrl,
-        id: roomId
+        id: roomId,
+        title: roomDetails.title, // Garante que o título será enviado
       };
 
       const result = await ApiService.updateRoom(payload);
@@ -144,6 +147,18 @@ const EditRoomPage = () => {
           <small className="form-text text-muted">
             A URL deve começar com http:// ou https://
           </small>
+        </div>
+
+        <div className="form-group">
+          <label>Título do Quarto</label>
+          <input
+            type="text"
+            name="title"
+            value={roomDetails.title}
+            onChange={handleChange}
+            className="form-control"
+            placeholder="Digite o título do quarto"
+          />
         </div>
 
         <div className="form-group">

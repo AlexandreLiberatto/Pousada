@@ -85,18 +85,18 @@ const EditBookingPage = () => {
       {bookingDetails ? (
         <div className="booking-details">
           <h3>Detalhes da Reserva</h3>
-          <p>Código de Confirmação: {bookingDetails.bookingReference}</p>
-          <p>Data de Entrada: {new Date(bookingDetails.checkInDate).toLocaleDateString('pt-BR')}</p>
-          <p>Data de Saída: {new Date(bookingDetails.checkOutDate).toLocaleDateString('pt-BR')}</p>
-          <p>Preço Total: R$ {bookingDetails.totalPrice.toFixed(2)}</p>
-          <p>Status de Pagamento: {
+          <p><span style={{ fontWeight: 'bold' }}>Código de Confirmação:</span> {bookingDetails.bookingReference}</p>
+          <p><span style={{ fontWeight: 'bold' }}>Data de Entrada:</span> {new Date(bookingDetails.checkInDate).toLocaleDateString('pt-BR')}</p>
+          <p><span style={{ fontWeight: 'bold' }}>Data de Saída:</span> {new Date(bookingDetails.checkOutDate).toLocaleDateString('pt-BR')}</p>
+          <p><span style={{ fontWeight: 'bold' }}>Preço Total:</span> R$ {bookingDetails.totalPrice.toFixed(2)}</p>
+          <p><span style={{ fontWeight: 'bold' }}>Status de Pagamento:</span> {
             bookingDetails.paymentStatus === 'PENDING' ? 'Pendente' :
             bookingDetails.paymentStatus === 'COMPLETED' ? 'Concluído' :
             bookingDetails.paymentStatus === 'FAILED' ? 'Falhou' :
             bookingDetails.paymentStatus === 'REFUNDED' ? 'Reembolsado' :
             bookingDetails.paymentStatus === 'REVERSED' ? 'Revertido' : bookingDetails.paymentStatus
           }</p>
-          <p>Status da Reserva: {
+          <p><span style={{ fontWeight: 'bold' }}>Status da Reserva:</span> {
             bookingDetails.bookingStatus === 'BOOKED' ? 'Reservado' :
             bookingDetails.bookingStatus === 'CHECKED_IN' ? 'Check-in Realizado' :
             bookingDetails.bookingStatus === 'CHECKED_OUT' ? 'Check-out Realizado' :
@@ -108,10 +108,10 @@ const EditBookingPage = () => {
           <br />
           <h3>Usuário Que Fez à Reserva</h3>
           <div>
-            <p> Nome: {bookingDetails.user.firstName}</p>
-            <p> Sobrenome: {bookingDetails.user.lastName}</p>
-            <p> E-mail: {bookingDetails.user.email}</p>
-            <p> Número de Telefone: {bookingDetails.user.phoneNumber}</p>
+            <p><span style={{ fontWeight: 'bold' }}>Nome:</span> {bookingDetails.user.firstName}</p>
+            <p><span style={{ fontWeight: 'bold' }}>Sobrenome:</span> {bookingDetails.user.lastName}</p>
+            <p><span style={{ fontWeight: 'bold' }}>E-mail:</span> {bookingDetails.user.email}</p>
+            <p><span style={{ fontWeight: 'bold' }}>Número de Telefone:</span> {bookingDetails.user.phoneNumber}</p>
           </div>
 
           <br />
@@ -119,10 +119,16 @@ const EditBookingPage = () => {
           <br />
           <h3>Detalhes da Reserva</h3>
           <div>
-            <p> Tipo: {bookingDetails.room.type}</p>
-            <p> Preço por Diária: R$ {bookingDetails.room.pricePerNight.toFixed(2)}</p>
-            <p> Capacidade: {bookingDetails.room.capacity} pessoa(s)</p>
-            <p> Descrição: {bookingDetails.room.description}</p>
+            <p><span style={{ fontWeight: 'bold' }}>Título do Quarto:</span> {bookingDetails.room.title}</p>
+            <p><span style={{ fontWeight: 'bold' }}>Tipo:</span> {
+              bookingDetails.room.type === 'SINGLE' ? 'Solteiro' :
+              bookingDetails.room.type === 'DOUBLE' ? 'Duplo' :
+              bookingDetails.room.type === 'TRIPLE' ? 'Triplo' :
+              bookingDetails.room.type === 'SUIT' ? 'Suíte' : bookingDetails.room.type
+            }</p>
+            <p><span style={{ fontWeight: 'bold' }}>Preço por Diária:</span> R$ {bookingDetails.room.pricePerNight.toFixed(2)}</p>
+            <p><span style={{ fontWeight: 'bold' }}>Capacidade:</span> {bookingDetails.room.capacity} pessoa(s)</p>
+            <p><span style={{ fontWeight: 'bold' }}>Descrição:</span> {bookingDetails.room.description}</p>
             <img src={bookingDetails.room.imageUrl} alt="" height="200" />
           </div>
           <hr />

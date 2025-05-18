@@ -100,7 +100,7 @@ const RoomDetailsPage = () => {
     return <div>Carregando...</div>;
   }
 
-  const { roomNumber, type, pricePerNight, capacity, description, imageUrl } = room;
+  const { roomNumber, type, pricePerNight, capacity, description, imageUrl, title } = room;
 
   return (
     <div className="room-details-booking">
@@ -112,16 +112,19 @@ const RoomDetailsPage = () => {
       <h2>Detalhes do Quarto</h2>
       <img src={imageUrl} alt={type} className="room-details-image" />
       <div className="room-details-info">
-        <h3>{
-          type === 'SINGLE' ? 'Solteiro' :
-          type === 'DOUBLE' ? 'Duplo' :
-          type === 'TRIPLE' ? 'Triplo' :
-          type === 'SUIT' ? 'Suíte' : type
-        }</h3>
-        <p>Número: {roomNumber}</p>
-        <p>Capacidade: {capacity}</p>
-        <p>Preço: {formatPrice(pricePerNight)} / diária</p>
-        <p>{description}</p>
+        <h2 style={{ fontWeight: 'bold', fontSize: '1.4em', margin: '16px 0 8px 0', textAlign: 'center' }}>{title}</h2>
+        <p style={{ color: '#555', margin: 0, textAlign: 'center' }}>
+          <span style={{ fontWeight: 'bold' }}>Tipo:</span> {
+            type === 'SINGLE' ? 'Solteiro' :
+            type === 'DOUBLE' ? 'Duplo' :
+            type === 'TRIPLE' ? 'Triplo' :
+            type === 'SUIT' ? 'Suíte' : type
+          }
+        </p>
+        <p><span style={{ fontWeight: 'bold' }}>Número:</span> {roomNumber}</p>
+        <p><span style={{ fontWeight: 'bold' }}>Capacidade:</span> {capacity}</p>
+        <p><span style={{ fontWeight: 'bold' }}>Preço:</span> {formatPrice(pricePerNight)} / diária</p>
+        <p><span style={{ fontWeight: 'bold' }}>Descrição:</span> {description}</p>
       </div>
 
       {/* Controles de reserva*/}

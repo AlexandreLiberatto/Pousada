@@ -36,9 +36,12 @@ const RoomResult = ({roomSearchResults}) => {
                         <div className="room-list-item" key={room.id}>
                             <img className="room-list-item-image" src={room.imageUrl} alt={room.roomNumber} />
                             <div className="room-details">
-                                <h3>{roomTypeLabel}</h3>
-                                <p>Preço: {formatPrice(room.pricePerNight)}/Diária</p>
-                                <p>Descrição: {room.description}</p>
+                                <h2 style={{ fontWeight: 'bold', fontSize: '1.4em', marginBottom: 12, textAlign: 'left' }}>{room.title}</h2>
+                                <p style={{ color: '#555', margin: 0 }}>
+                                    <span style={{ fontWeight: 'bold' }}>Tipo:</span> {roomTypeLabel}
+                                </p>
+                                <p><span style={{ fontWeight: 'bold' }}>Preço:</span> {formatPrice(room.pricePerNight)}/Diária</p>
+                                <p><span style={{ fontWeight: 'bold' }}>Descrição:</span> {room.description}</p>
                             </div>
 
                             <div className="book-now-div">

@@ -15,6 +15,7 @@ const AddRoomPage = () => {
     pricePerNight: roomToEdit?.pricePerNight || "",
     capacity: roomToEdit?.capacity || "",
     description: roomToEdit?.description || "",
+    title: roomToEdit?.title || "", // Novo campo Título
   });
 
   const [error, setError] = useState("");
@@ -70,7 +71,7 @@ const AddRoomPage = () => {
   const handleSubmit = async () => {
     const tipoFinal = newRoomType.trim() !== "" ? newRoomType : roomDetails.type;
 
-    if (!tipoFinal || !roomDetails.pricePerNight || !roomDetails.capacity || !roomDetails.roomNumber) {
+    if (!tipoFinal || !roomDetails.pricePerNight || !roomDetails.capacity || !roomDetails.roomNumber || !roomDetails.title) {
       setError("Todos os detalhes do quarto devem ser fornecidos.");
       setTimeout(() => setError(""), 5000);
       return;
@@ -90,7 +91,8 @@ const AddRoomPage = () => {
       const payload = {
         ...roomDetails,
         type: tipoFinal,
-        id: roomToEdit?.id || null
+        id: roomToEdit?.id || null,
+        title: roomDetails.title // Garante que o título será enviado
       };
 
       const result = isEditMode 
@@ -142,6 +144,18 @@ const AddRoomPage = () => {
           <small className="form-text text-muted">
             A URL deve começar com http:// ou https://
           </small>
+        </div>
+
+        <div className="form-group">
+          <label>Título do Quarto *</label>
+          <input
+            type="text"
+            name="title"
+            value={roomDetails.title}
+            onChange={handleChange}
+            className="form-control"
+            placeholder="Digite o título do quarto"
+          />
         </div>
 
         <div className="form-group">
