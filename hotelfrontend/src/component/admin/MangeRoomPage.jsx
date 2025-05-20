@@ -24,16 +24,17 @@ const ManageRoomPage = () => {
                 setRooms(resp.rooms)
                 setFilteredRooms(resp.rooms)
             } catch (error) {
-                console.log(error.message)
+                // Removido console.log de debug
             }
         };
 
         const fetchRoomTypes = async () => {
             try {
                 const resp = await ApiService.getRoomTypes();
-                setRoomTypes(resp)
+                setRoomTypes(Array.isArray(resp) ? resp : (resp ? [resp] : []));
             } catch (error) {
-                console.log(error.message)
+                setRoomTypes([])
+                // Removido console.log de debug
             }
         }
 
@@ -73,7 +74,7 @@ const ManageRoomPage = () => {
               <label>Filtra Por Tipo:</label>
               <select onChange={handleRoomTypeChange}>
                 <option value="">Todos</option>
-                {roomTypes.map((type) => {
+                {Array.isArray(roomTypes) && roomTypes.map((type) => {
                   let translatedType;
                   switch (type) {
                     case "SINGLE":
@@ -89,7 +90,7 @@ const ManageRoomPage = () => {
                       translatedType = "Suíte";
                       break;
                     default:
-                      translatedType = type;
+                      translatedType = type || "-";
                   }
                   return (
                     <option key={type} value={type}>

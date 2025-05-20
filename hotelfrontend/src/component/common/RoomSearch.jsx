@@ -3,7 +3,7 @@ import ApiService from "../../service/ApiService";
 import { DayPicker } from "react-day-picker";
 import { ptBR } from "date-fns/locale";
 
-const RoomSearch = ({ handSearchResult }) => {
+const RoomSearch = ({ handleSearchResult }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndtDate] = useState(null);
   const [roomType, setRoomType] = useState("");
@@ -21,9 +21,9 @@ const RoomSearch = ({ handSearchResult }) => {
     const fetchRoomTypes = async () => {
       try {
         const types = await ApiService.getRoomTypes();
-        setRoomTypes(types);
+        setRoomTypes(Array.isArray(types) ? types : (types ? [types] : []));
       } catch (error) {
-        console.log("Erro ao buscar RoomTypes" + error);
+        setRoomTypes([]);
       }
     };
     fetchRoomTypes();
@@ -55,10 +55,13 @@ const RoomSearch = ({ handSearchResult }) => {
 
   //isso irá buscar os quartos aviabale da nossa API
   const handleInternalSearch = async () => {
-    if (!startDate || !endDate || !roomType) {
-      showError("Selecione os campos");
+    if (!startDate || !endDate) {
+      showError("Selecione as datas de entrada e saída");
       return false;
     }
+
+    // Se o tipo de quarto for vazio ou 'Todos', envie null
+    const typeToSend = roomType === "" ? null : roomType;
 
     try {
       const formattedStartDate = startDate
@@ -68,19 +71,18 @@ const RoomSearch = ({ handSearchResult }) => {
         ? endDate.toLocaleDateString("en-CA")
         : null;
 
-
       const resp = await ApiService.getAvailableRooms(
         formattedStartDate,
         formattedEndDate,
-        roomType
+        typeToSend
       );
 
       if (resp.status === 200) {
-        if (resp.rooms.length === 0) {
-          showError("Tipo de quarto não disponível no momento para a data selecionada");
+        if (!resp.rooms || resp.rooms.length === 0) {
+          showError("Nenhum quarto disponível para o período selecionado.");
           return;
         }
-        handSearchResult(resp.rooms);
+        handleSearchResult(resp.rooms);
         setError("");
       }
     } catch (error) {
@@ -88,12 +90,10 @@ const RoomSearch = ({ handSearchResult }) => {
     }
   };
 
-
-return (
+  return (
     <section>
       <div className="search-container">
-  
-          {/* data de check-in e campo de calendário*/}
+        {/* data de check-in e campo de calendário*/}
         <div className="search-field" style={{ position: "relative" }}>
           <label>Data de Entrada</label>
           <input
@@ -103,7 +103,7 @@ return (
             onFocus={() => setStartDatePickerVisible(true)}
             readOnly
           />
-  
+
           {isStartDatePickerVisible && (
             <div className="datepicker-container" ref={startDateRef}>
               <DayPicker
@@ -118,10 +118,8 @@ return (
             </div>
           )}
         </div>
-  
-  
-          
-          {/*confira o campo de data e calendário */}
+
+        {/*confira o campo de data e calendário */}
         <div className="search-field" style={{ position: "relative" }}>
           <label>Data de Saída</label>
           <input
@@ -131,7 +129,7 @@ return (
             onFocus={() => setEndDatePickerVisible(true)}
             readOnly
           />
-  
+
           {isEndDatePickerVisible && (
             <div className="datepicker-container" ref={endDateRef}>
               <DayPicker
@@ -146,13 +144,13 @@ return (
             </div>
           )}
         </div>
-  
+
         {/*CAMPOS DE SELEÇÃO DO TIPO DE QUARTO */}
         <div className="search-field">
           <label>Tipo de Quarto</label>
           <select value={roomType} onChange={(e) => setRoomType(e.target.value)}>
-            <option disabled value="">Selecione o Tipo de Quarto</option>
-            {roomTypes.map((roomType) => {
+            <option value="">Todos</option>
+            {Array.isArray(roomTypes) && roomTypes.map((roomType) => {
               let roomTypeLabel;
               switch (roomType) {
                 case "SINGLE":
@@ -168,7 +166,7 @@ return (
                   roomTypeLabel = "Suíte";
                   break;
                 default:
-                  roomTypeLabel = roomType;
+                  roomTypeLabel = roomType || "-";
               }
               return (
                 <option value={roomType} key={roomType}>
@@ -178,17 +176,16 @@ return (
             })}
           </select>
         </div>
-  
+
         {/*BOTÃO DE PESQUISA */}
         <button className="home-search-button" onClick={handleInternalSearch}>
         Pesquisar Quartos
         </button>
       </div>
-  
+
       {error && <p className="error-message">{error}</p>}
     </section>
   );
 };
-
 
 export default RoomSearch;

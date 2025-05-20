@@ -6,6 +6,16 @@ const RoomResult = ({roomSearchResults}) => {
     const navigate = useNavigate();
     const isAdmin = ApiService.isAdmin();
 
+    // Função para construir a URL correta da imagem
+    const getImageUrl = (room) => {
+        if (room && room.id) {
+            // Usa variável de ambiente para produção ou localhost
+            const baseUrl = process.env.REACT_APP_API_BACKEND || '';
+            return `${baseUrl}/api/rooms/${room.id}/image`;
+        }
+        return "/images/no-image.png";
+    };
+
     const formatPrice = (price) => {
         return price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };
@@ -30,11 +40,19 @@ const RoomResult = ({roomSearchResults}) => {
                             roomTypeLabel = "Suíte";
                             break;
                         default:
-                            roomTypeLabel = room.type;
+                            roomTypeLabel = room.type || "-";
                     }
                     return (
                         <div className="room-list-item" key={room.id}>
-                            <img className="room-list-item-image" src={room.imageUrl} alt={room.roomNumber} />
+                            <img 
+                                className="room-list-item-image" 
+                                src={getImageUrl(room)} 
+                                alt={room.title || `Quarto ${room.roomNumber}`}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/images/no-image.png";
+                                }}
+                            />
                             <div className="room-details">
                                 <h2 style={{ fontWeight: 'bold', fontSize: '1.4em', marginBottom: 12, textAlign: 'left' }}>{room.title}</h2>
                                 <p style={{ color: '#555', margin: 0 }}>

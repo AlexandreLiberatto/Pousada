@@ -15,8 +15,17 @@ export default class ApiService {
 
     //token deceype usando cruyptojs
     static decrypt(token) {
-        const bytes = CryptoJS.AES.decrypt(token, this.ENCRYPTION_KEY);
-        return bytes.toString(CryptoJS.enc.Utf8);
+        try {
+            if (!token || typeof token !== 'string') return null;
+            const bytes = CryptoJS.AES.decrypt(token, this.ENCRYPTION_KEY);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            if (!decrypted) throw new Error('Token descriptografado vazio');
+            return decrypted;
+        } catch (e) {
+            console.error('Erro ao descriptografar token:', e.message);
+            this.clearAuth(); // Limpa tokens inválidos
+            return null;
+        }
     }
 
     //salva token
@@ -29,7 +38,7 @@ export default class ApiService {
     static getToken() {
         const encrytpedToken = localStorage.getItem("token");
         if (!encrytpedToken) return null;
-        return this.decrypt(encrytpedToken)
+        return this.decrypt(encrytpedToken);
     }
 
     //salva role
@@ -43,7 +52,7 @@ export default class ApiService {
     static getRole() {
         const encrytpedRole = localStorage.getItem("role");
         if (!encrytpedRole) return null;
-        return this.decrypt(encrytpedRole)
+        return this.decrypt(encrytpedRole);
     }
 
     static clearAuth() {
@@ -103,6 +112,26 @@ export default class ApiService {
         return resp.data;
       }
 
+    static async addRoomWithImage(roomDTO, imageFile) {
+        const formData = new FormData();
+        formData.append('room', new Blob([JSON.stringify(roomDTO)], { type: 'application/json' }));
+        if (imageFile) formData.append('imageFile', imageFile);
+        const resp = await axios.post(`${this.BASE_URL}/rooms/add`, formData, {
+            headers: { ...this.getHeader(), 'Content-Type': 'multipart/form-data' }
+        });
+        return resp.data;
+    }
+
+    static async updateRoomWithImage(roomDTO, imageFile) {
+        const formData = new FormData();
+        formData.append('room', new Blob([JSON.stringify(roomDTO)], { type: 'application/json' }));
+        if (imageFile) formData.append('imageFile', imageFile);
+        const resp = await axios.put(`${this.BASE_URL}/rooms/update`, formData, {
+            headers: { ...this.getHeader(), 'Content-Type': 'multipart/form-data' }
+        });
+        return resp.data;
+    }
+
     //para obter tipos de quarto
     static async getRoomTypes() {
         const resp = await axios.get(`${this.BASE_URL}/rooms/types`);
@@ -136,15 +165,14 @@ export default class ApiService {
       }
 
     static async getAvailableRooms(checkInDate, checkOutDate, roomType) {
-
-        console.log("checkInDate from api: " + checkInDate)
-        console.log("checkOutDate from api: " + checkOutDate)
-
-        const resp = await axios.get(`${this.BASE_URL}/rooms/available?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&roomType=${roomType}`);
+        // Se roomType for null ou vazio, não inclua na URL
+        let url = `${this.BASE_URL}/rooms/available?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`;
+        if (roomType) {
+            url += `&roomType=${roomType}`;
+        }
+        const resp = await axios.get(url);
         return resp.data;
-
     }
-
 
     //BOOKINGS
     static async getBookingByReference(bookingCode) {

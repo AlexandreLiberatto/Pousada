@@ -19,6 +19,15 @@ const RoomDetailsPage = () => {
   const [showMessage, setShowMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
+  // Função para construir a URL correta da imagem do quarto
+  const getImageUrl = (room) => {
+    if (room && room.id) {
+      const baseUrl = process.env.REACT_APP_API_BACKEND || '';
+      return `${baseUrl}/api/rooms/${room.id}/image`;
+    }
+    return "/images/no-image.png";
+  };
+
   //buscar detalhes do quarto
 
   useEffect(() => {
@@ -26,8 +35,6 @@ const RoomDetailsPage = () => {
       try {
         const resp = await ApiService.getRoomById(roomId);
         setRoom(resp.room);
-
-        console.log(resp);
       } catch (error) {
         console.log(error);
       }
@@ -68,7 +75,6 @@ const RoomDetailsPage = () => {
   };
 
   const acceptBooking = async () => {
-    console.log("Inside acceptBooking()");
     try {
       const formattedCheckInDate = checkInDate.toLocaleDateString("en-CA");
       const formatterdCheckOutDate = checkOutDate.toLocaleDateString("en-CA");
@@ -100,7 +106,7 @@ const RoomDetailsPage = () => {
     return <div>Carregando...</div>;
   }
 
-  const { roomNumber, type, pricePerNight, capacity, description, imageUrl, title } = room;
+  const { roomNumber, type, pricePerNight, capacity, description, title } = room;
 
   return (
     <div className="room-details-booking">
@@ -110,7 +116,7 @@ const RoomDetailsPage = () => {
 
       {/*  Detalhes do quarto*/}
       <h2>Detalhes do Quarto</h2>
-      <img src={imageUrl} alt={type} className="room-details-image" />
+      <img src={getImageUrl(room)} alt={type} className="room-details-image" onError={e => {e.target.onerror=null; e.target.src="/images/no-image.png";}} />
       <div className="room-details-info">
         <h2 style={{ fontWeight: 'bold', fontSize: '1.4em', margin: '16px 0 8px 0', textAlign: 'center' }}>{title}</h2>
         <p style={{ color: '#555', margin: 0, textAlign: 'center' }}>

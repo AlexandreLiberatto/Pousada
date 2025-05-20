@@ -61,9 +61,6 @@ const EditBookingPage = () => {
         navigate("/admin/manage-bookings");
       }, 3000);
     } catch (error) {
-
-        console.log(error);
-
       setMessage({
         type: "error",
         text: error.response?.data?.message || error.message,
@@ -129,7 +126,15 @@ const EditBookingPage = () => {
             <p><span style={{ fontWeight: 'bold' }}>Preço por Diária:</span> R$ {bookingDetails.room.pricePerNight.toFixed(2)}</p>
             <p><span style={{ fontWeight: 'bold' }}>Capacidade:</span> {bookingDetails.room.capacity} pessoa(s)</p>
             <p><span style={{ fontWeight: 'bold' }}>Descrição:</span> {bookingDetails.room.description}</p>
-            <img src={bookingDetails.room.imageUrl} alt="" height="200" />
+            <img
+              src={bookingDetails.room && bookingDetails.room.id
+                ? `${process.env.REACT_APP_API_BACKEND || ''}/api/rooms/${bookingDetails.room.id}/image`
+                : "/images/no-image.png"}
+              alt="Room"
+              height="200"
+              style={{ objectFit: 'cover', borderRadius: '8px', marginTop: '8px' }}
+              onError={e => {e.target.onerror=null; e.target.src="/images/no-image.png";}}
+            />
           </div>
           <hr />
 

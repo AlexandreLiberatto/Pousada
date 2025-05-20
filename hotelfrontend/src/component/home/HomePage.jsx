@@ -10,7 +10,6 @@ const HomePage = () => {
     //função para manipular resultados de pesquisa
     const handleSearchResult = (results) => {
         setRoomSearchResult(results);
-        console.log("ReSILT IS: " + results)
     }
 
 
@@ -27,7 +26,7 @@ const HomePage = () => {
                 </header>
             </section>
 
-            <RoomSearch handSearchResult={handleSearchResult}/>
+            <RoomSearch handleSearchResult={handleSearchResult}/>
             <RoomResult roomSearchResults={roomSearchResult}/>
 
             <h2 className="home-services">Serviços na <span className="phegon-color">Quinta do Ypuã</span></h2>

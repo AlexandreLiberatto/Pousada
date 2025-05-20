@@ -16,7 +16,7 @@ const AdminPage = () => {
                 setAdminName(resp.user.firstName)
                 
             } catch (error) {
-                console.log(error.message)
+                // Error handling logic
             }
         }
         fetchAdminName();

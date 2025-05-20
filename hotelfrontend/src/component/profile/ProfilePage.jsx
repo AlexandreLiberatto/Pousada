@@ -15,7 +15,7 @@ const ProfilePage = () => {
                 setUser(myProfileResponse.user)
                 // Buscar reservas de usuários usando o ID do usuário obtido
                 const myBookingResponse = await ApiService.myBookings();
-                setBookings(myBookingResponse.bookings)
+                setBookings(Array.isArray(myBookingResponse.bookings) ? myBookingResponse.bookings : []);
 
             } catch (error) {
                 setError(error.response?.data?.message || error.message);
@@ -124,7 +124,14 @@ const ProfilePage = () => {
                                     <p><strong>Valor Total:</strong> R$ {booking.totalPrice.toFixed(2)}</p>
                                     <p><strong>Número do Quarto:</strong> {booking.room.roomNumber}</p>
                                     <p><strong>Tipo do Quarto:</strong> {roomType}</p>
-                                    <img src={booking.room.imageUrl} alt="Room" className="room-photo" />
+                                    <img 
+                                        src={booking.room && booking.room.id 
+                                            ? `${process.env.REACT_APP_API_BACKEND || ''}/api/rooms/${booking.room.id}/image`
+                                            : "/images/no-image.png"}
+                                        alt="Room"
+                                        className="room-photo"
+                                        onError={e => {e.target.onerror=null; e.target.src="/images/no-image.png";}}
+                                    />
                                 </div>
                             );
                         })

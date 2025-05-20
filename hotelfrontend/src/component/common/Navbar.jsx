@@ -69,7 +69,7 @@ function Navbar() {
             <ul className={`navbar-ul ${isMenuOpen ? 'active' : ''}`}>
                 <li><NavLink to="/home" className={({ isActive }) => isActive ? "active" : ""} onClick={closeMenu}>Inicio</NavLink></li>
                 <li><NavLink to="/rooms" className={({ isActive }) => isActive ? "active" : ""} onClick={closeMenu}>Quartos</NavLink></li>
-                <li><NavLink to="/find-booking" className={({ isActive }) => isActive ? "active" : ""} onClick={closeMenu}>Ver Minhas Reservas</NavLink></li>
+                <li><NavLink to="/find-booking" className={({ isActive }) => isActive ? "active" : ""} onClick={closeMenu}>Reservas</NavLink></li>
 
                 {isCustomer && <li><NavLink to="/profile" className={({ isActive }) => isActive ? "active" : ""} onClick={closeMenu}>Perfil</NavLink></li>}
                 {isAdmin && <li><NavLink to="/admin" className={({ isActive }) => isActive ? "active" : ""} onClick={closeMenu}>Administrador</NavLink></li>}

@@ -6,6 +6,15 @@ const FindBookingPage = () => {
     const [bookingDetails, setBookingDetails] = useState(null); // Variável de estado para detalhes de reserva
     const [error, setError] = useState(null); // Rastreie quaisquer erros
 
+    // Função para construir a URL correta da imagem do quarto
+    const getImageUrl = (room) => {
+        if (room && room.id) {
+            const baseUrl = process.env.REACT_APP_API_BACKEND || '';
+            return `${baseUrl}/api/rooms/${room.id}/image`;
+        }
+        return "https://via.placeholder.com/300x200?text=Sem+Imagem";
+    };
+
     const handleSearch = async () => {
         if (!confirmationCode.trim()) {
             setError("Por favor, insira um código de confirmação de reserva");
@@ -85,7 +94,7 @@ const FindBookingPage = () => {
                             bookingDetails.room.type === 'SUIT' ? 'Suíte' : bookingDetails.room.type
                         }</p>
                         <p><strong>Capacidade:</strong> {bookingDetails.room.capacity}</p>
-                        <img src={bookingDetails.room.imageUrl} alt="Imagem do quarto" style={{ maxWidth: '100%', height: 'auto' }} />
+                        <img src={getImageUrl(bookingDetails.room)} alt="Imagem do quarto" style={{ maxWidth: '100%', height: 'auto' }} onError={e => {e.target.onerror=null; e.target.src="https://via.placeholder.com/300x200?text=Imagem+Não+Disponível";}} />
                     </div>
                 </div>
             )}

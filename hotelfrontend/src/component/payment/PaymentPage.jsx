@@ -17,16 +17,12 @@ const PaymentPage = () => {
         const fetchClientSecrete = async () => {
             try {
                 const paymentData = {bookingReference, amount};
-                console.log("O NÚMERO DA RESERVA É: " + bookingReference)
-                console.log("Quantidade É: " + amount)
 
                 const uniquePaymentSecreet = await ApiService.proceedForPayment(paymentData);
 
-                console.log("SEGREDO EXCLUSIVO DO CLIENTE DE fetch O segredo do cliente é:" + uniquePaymentSecreet);
                 setClientSecret(uniquePaymentSecreet);
                 
             } catch (error) {
-                console.log(error)
                 setError(error.response?.data?.message || error.message)
             }
         };
@@ -58,7 +54,6 @@ const PaymentPage = () => {
             }
             
             await ApiService.updateBookingPaymeent(paymentData)
-            console.log("O status do pagamento foi atualizado")
         } catch (error) {
             console.log(error.message)
         }

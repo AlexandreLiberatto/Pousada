@@ -24,17 +24,12 @@ const PaymentForm = ({clientSecrete, amount, onPaymentSuccess, onPaymentError}) 
                 card: element.getElement(CardElement)
             },
         });
-        console.log("Pagamento é: " + paymentIntent);
 
         if (error) {
             setError(error.message)
             setProcessing(false)
             onPaymentError(error.message)
-
-            console.log("O erro no PaymentForm é: " + error);
         }else if(paymentIntent.status === "succeeded"){
-
-            console.log("O formulário de pagamento foi preenchido com sucesso: " + paymentIntent);
             setSucceeded(true)
             setProcessing(false)
             onPaymentSuccess(paymentIntent.id) //notificar o componente pai de uma transação bem-sucedida

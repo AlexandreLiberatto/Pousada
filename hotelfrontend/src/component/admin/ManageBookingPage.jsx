@@ -125,6 +125,15 @@ const ManageBookingsPage = () => {
 
           return (
             <div key={booking.id} className="booking-result-item">
+              <img
+                src={booking.room && booking.room.id
+                  ? `${process.env.REACT_APP_API_BACKEND || ''}/api/rooms/${booking.room.id}/image`
+                  : "/images/no-image.png"}
+                alt="Room"
+                className="room-photo"
+                onError={e => {e.target.onerror=null; e.target.src="/images/no-image.png";}}
+                style={{ width: '120px', height: '80px', objectFit: 'cover', marginBottom: '8px' }}
+              />
               <p><strong>Código da Reserva:</strong> {booking.bookingReference}</p>
               <p><strong>Data de Entrada:</strong> {new Date(booking.checkInDate).toLocaleDateString('pt-BR')}</p>
               <p><strong>Data de Saída:</strong> {new Date(booking.checkOutDate).toLocaleDateString('pt-BR')}</p>

@@ -15,21 +15,24 @@ const AddRoomPage = () => {
     pricePerNight: roomToEdit?.pricePerNight || "",
     capacity: roomToEdit?.capacity || "",
     description: roomToEdit?.description || "",
-    title: roomToEdit?.title || "", // Novo campo Título
+    title: roomToEdit?.title || "",
   });
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [roomTypes, setRoomTypes] = useState([]);
   const [newRoomType, setNewRoomType] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
     const fetchRoomTypes = async () => {
       try {
-        const types = await ApiService.getRoomTypes();
-        setRoomTypes(types);
+        const resp = await ApiService.getRoomTypes();
+        setRoomTypes(Array.isArray(resp) ? resp : (resp ? [resp] : []));
       } catch (error) {
-        console.log(error.response?.data?.message || error.message);
+        setRoomTypes([]);
+        console.log(error.message);
       }
     };
     fetchRoomTypes();
@@ -58,17 +61,20 @@ const AddRoomPage = () => {
     setNewRoomType(e.target.value);
   };
 
-  const validateImageUrl = (url) => {
-    if (!url) return false;
-    try {
-      new URL(url);
-      return url.startsWith("http://") || url.startsWith("https://");
-    } catch (e) {
-      return false;
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result);
+      reader.readAsDataURL(file);
+    } else {
+      setImagePreview("");
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const tipoFinal = newRoomType.trim() !== "" ? newRoomType : roomDetails.type;
 
     if (!tipoFinal || !roomDetails.pricePerNight || !roomDetails.capacity || !roomDetails.roomNumber || !roomDetails.title) {
@@ -77,8 +83,8 @@ const AddRoomPage = () => {
       return;
     }
 
-    if (!roomDetails.imageUrl || !validateImageUrl(roomDetails.imageUrl)) {
-      setError("Por favor, forneça uma URL de imagem válida (deve começar com http:// ou https://).");
+    if (!imageFile) {
+      setError("Por favor, selecione uma imagem do quarto.");
       setTimeout(() => setError(""), 5000);
       return;
     }
@@ -92,12 +98,12 @@ const AddRoomPage = () => {
         ...roomDetails,
         type: tipoFinal,
         id: roomToEdit?.id || null,
-        title: roomDetails.title // Garante que o título será enviado
+        title: roomDetails.title
       };
 
-      const result = isEditMode 
-        ? await ApiService.updateRoom(payload)
-        : await ApiService.addRoom(payload);
+      const result = isEditMode
+        ? await ApiService.updateRoomWithImage(payload, imageFile)
+        : await ApiService.addRoomWithImage(payload, imageFile);
 
       if (result.status === 200) {
         setSuccess(`Quarto ${isEditMode ? 'atualizado' : 'adicionado'} com sucesso.`);
@@ -117,148 +123,149 @@ const AddRoomPage = () => {
       <h2>{isEditMode ? 'Editar Quarto' : 'Adicionar Novo Quarto'}</h2>
       {error && <p className="error-message">{error}</p>}
       {success && <p className="success-message">{success}</p>}
-      <div className="edit-room-form">
-        <div className="form-group">
-          {roomDetails.imageUrl && (
-            <div>
-              <img
-                src={roomDetails.imageUrl}
-                alt="Preview do quarto"
-                className="room-photo-preview"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "https://via.placeholder.com/300x200?text=Imagem+não+disponível";
-                }}
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
+        <div className="edit-room-form">
+          <div className="form-group">
+            {imagePreview && (
+              <div>
+                <img
+                  src={imagePreview}
+                  alt="Preview do quarto"
+                  className="room-photo-preview"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://via.placeholder.com/300x200?text=Imagem+não+disponível";
+                  }}
+                />
+              </div>
+            )}
+            <label>Imagem do Quarto *</label>
+            <input
+              type="file"
+              accept="image/jpeg, image/jpg, image/png"
+              onChange={handleFileChange}
+              className="form-control"
+            />
+            <small className="form-text text-muted">
+              Formatos aceitos: JPG, JPEG, PNG (máx. 5MB)
+            </small>
+          </div>
+
+          <div className="form-group">
+            <label>Título do Quarto *</label>
+            <input
+              type="text"
+              name="title"
+              value={roomDetails.title}
+              onChange={handleChange}
+              className="form-control"
+              placeholder="Digite o título do quarto"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Tipo de Quarto *</label>
+            <select
+              name="type"
+              value={roomDetails.type}
+              onChange={handleRoomTypeChange}
+              className="form-control"
+              required
+            >
+              <option value="">Selecione o Tipo de Quarto</option>
+              {Array.isArray(roomTypes) && roomTypes.map((type) => {
+                let translatedType;
+                switch (type) {
+                  case "SINGLE":
+                    translatedType = "Solteiro";
+                    break;
+                  case "DOUBLE":
+                    translatedType = "Duplo";
+                    break;
+                  case "TRIPLE":
+                    translatedType = "Triplo";
+                    break;
+                  case "SUIT":
+                    translatedType = "Suíte";
+                    break;
+                  default:
+                    translatedType = type || "-";
+                }
+                return (
+                  <option key={type} value={type}>
+                    {translatedType}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          {roomDetails.type === "outro" && (
+            <div className="form-group">
+              <label>Novo Tipo de Quarto *</label>
+              <input
+                type="text"
+                placeholder="Informe o novo tipo de quarto"
+                value={newRoomType}
+                onChange={handleNewRoomTypeChange}
+                className="form-control"
               />
             </div>
           )}
-          <label>URL da Imagem do Quarto *</label>
-          <input 
-            type="text" 
-            name="imageUrl"
-            value={roomDetails.imageUrl}
-            onChange={handleChange}
-            placeholder="Cole a URL da imagem (ex: https://exemplo.com/quarto.jpg)"
-            className="form-control"
-          />
-          <small className="form-text text-muted">
-            A URL deve começar com http:// ou https://
-          </small>
-        </div>
 
-        <div className="form-group">
-          <label>Título do Quarto *</label>
-          <input
-            type="text"
-            name="title"
-            value={roomDetails.title}
-            onChange={handleChange}
-            className="form-control"
-            placeholder="Digite o título do quarto"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Tipo de Quarto *</label>
-          <select 
-            value={roomDetails.type} 
-            onChange={handleRoomTypeChange}
-            className="form-control"
-          >
-            <option value="">Selecione o Tipo de Quarto</option>
-            {roomTypes.map((type) => {
-              let translatedType;
-              switch (type) {
-                case "SINGLE":
-                  translatedType = "Solteiro";
-                  break;
-                case "DOUBLE":
-                  translatedType = "Duplo";
-                  break;
-                case "TRIPLE":
-                  translatedType = "Triplo";
-                  break;
-                case "SUIT":
-                  translatedType = "Suíte";
-                  break;
-                default:
-                  translatedType = type;
-              }
-              return (
-                <option key={type} value={type}>
-                  {translatedType}
-                </option>
-              );
-            })}
-            <option value="outro">Outro (Novo Tipo)</option>
-          </select>
-        </div>
-
-        {roomDetails.type === "outro" && (
           <div className="form-group">
-            <label>Novo Tipo de Quarto *</label>
+            <label>Número do Quarto *</label>
             <input
-              type="text"
-              placeholder="Informe o novo tipo de quarto"
-              value={newRoomType}
-              onChange={handleNewRoomTypeChange}
+              type="number"
+              name="roomNumber"
+              value={roomDetails.roomNumber}
+              onChange={handleChange}
               className="form-control"
+              min="1"
             />
           </div>
-        )}
 
-        <div className="form-group">
-          <label>Número do Quarto *</label>
-          <input
-            type="number"
-            name="roomNumber"
-            value={roomDetails.roomNumber}
-            onChange={handleChange}
-            className="form-control"
-            min="1"
-          />
+          <div className="form-group">
+            <label>Preço do Quarto *</label>
+            <input
+              type="number"
+              name="pricePerNight"
+              value={roomDetails.pricePerNight}
+              onChange={handleChange}
+              className="form-control"
+              min="0.1"
+              step="0.01"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Capacidade *</label>
+            <input
+              type="number"
+              name="capacity"
+              value={roomDetails.capacity}
+              onChange={handleChange}
+              className="form-control"
+              min="1"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Descrição do Quarto</label>
+            <textarea
+              name="description"
+              value={roomDetails.description}
+              onChange={handleChange}
+              className="form-control"
+              rows="4"
+            ></textarea>
+          </div>
+
+          <button className="btn btn-primary" type="submit">
+            {isEditMode ? 'Atualizar Quarto' : 'Adicionar Quarto'}
+          </button>
         </div>
-
-        <div className="form-group">
-          <label>Preço do Quarto *</label>
-          <input
-            type="number"
-            name="pricePerNight"
-            value={roomDetails.pricePerNight}
-            onChange={handleChange}
-            className="form-control"
-            min="0.1"
-            step="0.01"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Capacidade *</label>
-          <input
-            type="number"
-            name="capacity"
-            value={roomDetails.capacity}
-            onChange={handleChange}
-            className="form-control"
-            min="1"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Descrição do Quarto</label>
-          <textarea
-            name="description"
-            value={roomDetails.description}
-            onChange={handleChange}
-            className="form-control"
-            rows="4"
-          ></textarea>
-        </div>
-
-        <button className="btn btn-primary" onClick={handleSubmit}>
-          {isEditMode ? 'Atualizar Quarto' : 'Adicionar Quarto'}
-        </button>
-      </div>
+      </form>
     </div>
   );
 };

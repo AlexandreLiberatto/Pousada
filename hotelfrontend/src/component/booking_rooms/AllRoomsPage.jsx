@@ -16,6 +16,7 @@ const AllRoomsPage = () => {
   const handleSearchResult = (results) => {
     setRooms(results);
     setFilteredRooms(results);
+    setCurrentPage(1); // Reinicia a paginação ao buscar
   };
 
   useEffect(() => {
@@ -26,7 +27,7 @@ const AllRoomsPage = () => {
         setRooms(resp.rooms);
         setFilteredRooms(resp.rooms);
       } catch (error) {
-        console.log(error);
+        // Removido console.log de debug
       }
     };
 
@@ -34,9 +35,10 @@ const AllRoomsPage = () => {
     const ftechRoomsType = async () => {
       try {
         const types = await ApiService.getRoomTypes();
-        setRoomTypes(types);
+        setRoomTypes(Array.isArray(types) ? types : []);
       } catch (error) {
-        console.log(error);
+        setRoomTypes([]);
+        // Removido console.log de debug
       }
     };
     fetchRooms();
@@ -76,7 +78,7 @@ const AllRoomsPage = () => {
         <label>Filtrar por Tipo de Quarto</label>
         <select value={selectedRoomType} onChange={handleRoomTypeChange}>
           <option value="">Todos</option>
-          {roomTypes.map((type) => {
+          {Array.isArray(roomTypes) && roomTypes.map((type) => {
             let translatedType;
             switch (type) {
               case "SINGLE":
@@ -103,7 +105,7 @@ const AllRoomsPage = () => {
         </select>
       </div>
 
-      <RoomSearch handSearchResult={handleSearchResult} />
+      <RoomSearch handleSearchResult={handleSearchResult} />
       <RoomResult roomSearchResults={currentRooms} />
 
       <Pagination
