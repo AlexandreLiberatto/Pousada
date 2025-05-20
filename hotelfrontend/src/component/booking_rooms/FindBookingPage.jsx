@@ -39,7 +39,7 @@ const FindBookingPage = () => {
                 <input
                     required
                     type="text"
-                    placeholder="Insira o código de confirmação da sua reserva"
+                    placeholder="Insira o código da reserva..."
                     value={confirmationCode}
                     onChange={(e) => setConfirmationCode(e.target.value)}
                     style={{ padding: '10px', width: '300px' }}

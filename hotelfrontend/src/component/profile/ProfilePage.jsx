@@ -42,7 +42,7 @@ const ProfilePage = () => {
             {user && <h2>Bem Vindo, {user.firstName}</h2>}
             <div className="profile-actions">
                 <button className="edit-profile-button" onClick={handleEditProfile}>Perfil</button>
-                <button className="edit-profile-button" onClick={handleLogout}>Logoff</button>
+                <button className="edit-profile-button" onClick={handleLogout}>Logout</button>
             </div>
             {error && <p className="error-message">{error}</p>}
             {user && (

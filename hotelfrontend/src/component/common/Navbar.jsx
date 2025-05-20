@@ -83,7 +83,7 @@ function Navbar() {
 
                 {isAuthenticated && (
                     <li>
-                        <button onClick={handleLogout} className="logout-button">Logoff</button>
+                        <button onClick={handleLogout} className="logout-button">Logout</button>
                     </li>
                 )}
             </ul>
