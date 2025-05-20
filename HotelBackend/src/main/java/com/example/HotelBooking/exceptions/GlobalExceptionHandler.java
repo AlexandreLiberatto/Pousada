@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -13,7 +14,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Response> handleAllUnknowExceptions(Exception ex) {
         Response response = Response.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message(ex.getMessage())
+                .message("Erro interno no servidor: " + ex.getMessage())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -27,25 +28,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-
-    @ExceptionHandler(NameValueRequiredException.class)
-    public ResponseEntity<Response> handleNameValueRequiredException(NameValueRequiredException ex) {
-        Response response = Response.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(ex.getMessage())
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidCredentialException.class)
-    public ResponseEntity<Response> handleInvalidCredentialException(InvalidCredentialException ex) {
-        Response response = Response.builder()
-                .status(HttpStatus.BAD_REQUEST.value())
-                .message(ex.getMessage())
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(InvalidBookingStateAndDateException.class)
     public ResponseEntity<Response> handleInvalidBookingStateAndDateException(InvalidBookingStateAndDateException ex) {
         Response response = Response.builder()
@@ -54,4 +36,17 @@ public class GlobalExceptionHandler {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Response> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        String message = "Não é possível deletar este quarto porque ele está vinculado a uma ou mais reservas.";
+
+        Response response = Response.builder()
+                .status(HttpStatus.CONFLICT.value())
+                .message(message)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
 }
+

@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -157,21 +158,42 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response getMyBookingHistory() {
-
-        User user = getCurrentLoggedInUser();
-
-        List<Booking> bookingList = bookingRepository.findByUserId(user.getId());
-
-
-        List<BookingDTO> bookingDTOList = modelMapper.map(bookingList, new TypeToken<List<BookingDTO>>(){}.getType());
-
-        return Response.builder()
+        try {
+            User user = getCurrentLoggedInUser();
+            var projections = bookingRepository.findBookingHistoryByUserId(user.getId());
+            List<BookingDTO> bookingDTOList = projections.stream().map(p -> BookingDTO.builder()
+                    .id(p.getId())
+                    .checkInDate(p.getCheckInDate())
+                    .checkOutDate(p.getCheckOutDate())
+                    .totalPrice(p.getTotalPrice())
+                    .bookingReference(p.getBookingReference())
+                    .createdAt(p.getCreatedAt())
+                    .bookingStatus(p.getBookingStatus())
+                    .paymentStatus(p.getPaymentStatus())
+                    .room(com.example.HotelBooking.dtos.RoomDTO.builder()
+                            .id(p.getRoomId())
+                            .roomNumber(p.getRoomNumber())
+                            .type(p.getRoomType())
+                            .pricePerNight(p.getRoomPricePerNight())
+                            .capacity(p.getRoomCapacity())
+                            .description(p.getRoomDescription())
+                            .title(p.getRoomTitle())
+                            .imageUrl("/api/rooms/" + p.getRoomId() + "/image")
+                            .build())
+                    .build()
+            ).toList();
+            return Response.builder()
                 .status(200)
-                .message("success")
+                .message("Histórico de reservas recuperado com sucesso")
                 .bookings(bookingDTOList)
                 .build();
-
+        } catch (Exception e) {
+            log.error("Erro ao buscar histórico de reservas: ", e);
+            return Response.builder()
+                .status(500)
+                .message("Erro ao buscar histórico de reservas: " + e.getMessage())
+                .build();
+        }
     }
-
 
 }

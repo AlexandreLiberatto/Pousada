@@ -30,6 +30,24 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             @Param("roomType") RoomType roomType
     );
 
+    @Query("""
+            SELECT r.id AS id, r.roomNumber AS roomNumber, r.type AS type, r.pricePerNight AS pricePerNight, r.capacity AS capacity, r.description AS description, r.title AS title
+            FROM Room r
+            WHERE
+                r.id NOT IN (
+                    SELECT b.room.id
+                    FROM Booking b
+                    WHERE :checkInDate <= b.checkOutDate
+                    AND :checkOutDate >= b.checkInDate
+                    AND b.bookingStatus IN ('BOOKED', 'CHECKED_IN')
+                )
+                AND (:roomType IS NULL OR r.type = :roomType)
+            """)
+    List<com.example.HotelBooking.dtos.RoomAvailableProjection> findAvailableRoomsProjection(
+            @Param("checkInDate") LocalDate checkInDate,
+            @Param("checkOutDate") LocalDate checkOutDate,
+            @Param("roomType") RoomType roomType
+    );
 
     @Query("""
                 SELECT r FROM Room r

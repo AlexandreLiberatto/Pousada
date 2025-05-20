@@ -16,6 +16,9 @@ public class ModelMapperConfig {
                 .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE)
                 .setMatchingStrategy(MatchingStrategies.STANDARD);
 
+        // Mapeamento Room -> RoomSummaryDTO (sem imageData)
+        modelMapper.typeMap(com.example.HotelBooking.entities.Room.class, com.example.HotelBooking.dtos.RoomSummaryDTO.class);
+
         return modelMapper;
     }
 

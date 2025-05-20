@@ -5,9 +5,11 @@ import com.example.HotelBooking.dtos.RoomDTO;
 import com.example.HotelBooking.enums.RoomType;
 import com.example.HotelBooking.services.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,16 +22,18 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @PostMapping("/add")
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Response> addRoom(@RequestBody RoomDTO roomDTO) {
-        return ResponseEntity.ok(roomService.addRoom(roomDTO, null));
+    public ResponseEntity<Response> addRoom(@RequestPart("room") RoomDTO roomDTO,
+                                            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
+        return ResponseEntity.ok(roomService.addRoom(roomDTO, imageFile));
     }
 
-    @PutMapping("/update")
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Response> updateRoom(@RequestBody RoomDTO roomDTO) {
-        return ResponseEntity.ok(roomService.updateRoom(roomDTO, null));
+    public ResponseEntity<Response> updateRoom(@RequestPart("room") RoomDTO roomDTO,
+                                               @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
+        return ResponseEntity.ok(roomService.updateRoom(roomDTO, imageFile));
     }
 
     @GetMapping("/all")
@@ -40,6 +44,15 @@ public class RoomController {
     @GetMapping("/{id}")
     public ResponseEntity<Response> getRoomById(@PathVariable Long id) {
         return ResponseEntity.ok(roomService.getRoomById(id));
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getRoomImage(@PathVariable Long id) {
+        byte[] imageData = roomService.getRoomImageData(id);
+        if (imageData == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(imageData);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -58,8 +71,11 @@ public class RoomController {
     }
 
     @GetMapping("/types")
-    public ResponseEntity<List<RoomType>> getAllRoomTypes() {
-        return ResponseEntity.ok(roomService.getAllRoomTypes());
+    public ResponseEntity<List<String>> getAllRoomTypes() {
+        List<String> types = java.util.Arrays.stream(RoomType.values())
+                .map(Enum::name)
+                .toList();
+        return ResponseEntity.ok(types);
     }
 
     @GetMapping("/search")
@@ -67,3 +83,4 @@ public class RoomController {
         return ResponseEntity.ok(roomService.searchRoom(input));
     }
 }
+

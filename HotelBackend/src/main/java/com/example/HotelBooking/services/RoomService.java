@@ -17,4 +17,7 @@ public interface RoomService {
     Response getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, RoomType roomType);
     List<RoomType> getAllRoomTypes();
     Response searchRoom(String input);
+    byte[] getRoomImageDataById(Long id);
+    byte[] getRoomImageData(Long id);
 }
+

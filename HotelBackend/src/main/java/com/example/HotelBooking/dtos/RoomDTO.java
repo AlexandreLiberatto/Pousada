@@ -6,12 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 
 @Data
@@ -21,7 +19,6 @@ import java.math.BigDecimal;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RoomDTO {
-
     private Long id;
 
     @Min(value = 1, message = "O número do quarto deve ser pelo menos 1")
@@ -37,10 +34,7 @@ public class RoomDTO {
     private Integer capacity;
 
     private String description; // dados adicionais para o quarto
+    private String title; // título para os quartos
 
-    private String title; // titulo para os quartos
-
-    @Pattern(regexp = "^(https?://).+",
-            message = "URL da imagem inválida. Deve começar com http:// ou https://")
     private String imageUrl;
 }

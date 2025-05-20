@@ -27,6 +27,7 @@ public class BookingDTO {
 
     private UserDTO user;
 
+    // Remover o campo imageData do RoomDTO ao mapear BookingDTO
     private RoomDTO room;
     private Long roomId;
 

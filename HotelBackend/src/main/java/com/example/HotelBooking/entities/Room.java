@@ -1,11 +1,11 @@
 package com.example.HotelBooking.entities;
 
 import com.example.HotelBooking.enums.RoomType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,8 +43,10 @@ public class Room {
 
     private String title; // titulo para os quartos
 
-    @Column(length = 2048)
-    @Pattern(regexp = "^(https?://).+",
-            message = "URL da imagem inválida. Deve começar com http:// ou https://")
-    private String imageUrl;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @Column(name = "image_data")
+    private byte[] imageData;
 }
+

@@ -17,32 +17,30 @@ public class BookingController {
 
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Response> getAllBookings(){
+    public ResponseEntity<Response> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
-
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CUSTOMER') ")
-    public ResponseEntity<Response> createBooking(@RequestBody BookingDTO bookingDTO){
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('CUSTOMER')")
+    public ResponseEntity<Response> createBooking(@RequestBody BookingDTO bookingDTO) {
         return ResponseEntity.ok(bookingService.createBooking(bookingDTO));
     }
 
-
     @GetMapping("/{reference}")
-    public ResponseEntity<Response> findBookingByReferenceNo(@PathVariable String reference){
+    public ResponseEntity<Response> findBookingByReferenceNo(@PathVariable String reference) {
         return ResponseEntity.ok(bookingService.findBookingByReferenceNo(reference));
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Response> updateBooking(@RequestBody BookingDTO bookingDTO){
+    public ResponseEntity<Response> updateBooking(@RequestBody BookingDTO bookingDTO) {
         return ResponseEntity.ok(bookingService.updateBooking(bookingDTO));
     }
 
-
-
-
-
-
+    @GetMapping("/my")
+    @PreAuthorize("hasAuthority('CUSTOMER') or hasAuthority('ADMIN')")
+    public ResponseEntity<Response> getBookingsByCurrentUser() {
+        return ResponseEntity.ok(bookingService.getBookingsByCurrentUser());
+    }
 }
