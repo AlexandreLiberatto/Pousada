@@ -1,0 +1,85 @@
+.forgot-link {
+  transition: color 0.2s, font-weight 0.2s;
+}
+
+.highlight-forgot a {
+  color: #fff !important;
+  background: linear-gradient(90deg, #ff5e62 0%, #ff9966 100%);
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-weight: bold;
+  box-shadow: 0 2px 12px rgba(255, 94, 98, 0.15);
+  text-decoration: none;
+  animation: pulse-forgot 1.2s infinite;
+}
+
+@keyframes pulse-forgot {
+  0% { box-shadow: 0 0 0 0 rgba(255,94,98,0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(255,94,98,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,94,98,0.3); }
+}
+
+.nav-buttons-global {
+  top: 120px !important; /* ainda mais abaixo para garantir que não tape o logo da navbar em celulares */
+  left: 8px !important;
+  margin-top: 0 !important;
+  z-index: 1200;
+  max-width: 98vw;
+  background: rgba(255,255,255,0.98);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  border-radius: 8px;
+  padding: 2px;
+  transition: all 0.3s ease;
+}
+
+.nav-buttons-global button {
+  font-size: 20px !important;
+  padding: 8px !important;
+  background: transparent !important;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.nav-buttons-global button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+.nav-buttons-global button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .nav-buttons-global {
+    top: 120px !important; /* ainda mais abaixo para garantir que não tape o logo da navbar em celulares */
+    left: 8px !important;
+    margin-top: 0 !important;
+    z-index: 1200;
+    max-width: 98vw;
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    border-radius: 8px;
+    padding: 2px;
+  }
+  .nav-buttons-global button {
+    font-size: 20px !important;
+    padding: 2px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .nav-buttons-global {
+    bottom: 16px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    top: 70px !important; /* Ajustando para dispositivos móveis */
+    left: 8px !important;
+  }
+}

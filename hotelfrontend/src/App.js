@@ -3,6 +3,8 @@ import Navbar from "./component/common/Navbar";
 import Footer from "./component/common/Footer";
 import RegisterPage from "./component/auth/Register";
 import LoginPage from "./component/auth/LoginPage";
+import ForgotPasswordPage from "./component/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./component/auth/ResetPasswordPage";
 import HomePage from "./component/home/HomePage";
 import AllRoomsPage from "./component/booking_rooms/AllRoomsPage";
 import RoomDetailsPage from "./component/booking_rooms/RoomDetailsPage";
@@ -20,19 +22,20 @@ import EditRoomPage from "./component/admin/EditRoomPage";
 import ManageBookingsPage from "./component/admin/ManageBookingPage";
 import EditBookingPage from "./component/admin/EditBookingPage";
 import AdminRegisterPage from "./component/admin/AdminRegisterPage";
-
-
-
+import NavigationButtons from "./component/common/NavigationButtons";
 
 function App() {
   return (
     <BrowserRouter>
+      <NavigationButtons />
       <div className="App">
           <Navbar/>
           <div className="content">
               <Routes>
                 <Route path="/register" element={<RegisterPage/>}/>
                 <Route path="/login" element={<LoginPage/>}/>
+                <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
+                <Route path="/reset-password" element={<ResetPasswordPage/>}/>
                 <Route exact path="/home" element={<HomePage/>}/>
                 <Route path="/rooms" element={<AllRoomsPage/>}/>
                 <Route path="/find-booking" element={<FindBookingPage/>}/>

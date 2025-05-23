@@ -11,11 +11,16 @@ const RegisterPage = () => {
         phoneNumber: ""
     });
 
+    const [showPassword, setShowPassword] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
     const navigate = useNavigate();
 
     const handleInputChange = ({ target: { name, value } }) =>
         setFormData((prev) => ({ ...prev, [name]: value }));
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const isFormValid = Object.values(formData).every((field) => field.trim());
 
@@ -55,16 +60,46 @@ const RegisterPage = () => {
 
             <h2>Registrar</h2>
             <form onSubmit={handleSubmit}>
-                {["firstName", "lastName", "email", "phoneNumber", "password"].map((field) => (
+                {Object.keys(fieldLabels).map((field) => (
                     <div className="form-group" key={field}>
                         <label>{fieldLabels[field]}:</label>
-                        <input
-                            type={field === "email" ? "email" : field === "password" ? "password" : "text"}
-                            name={field}
-                            value={formData[field]}
-                            onChange={handleInputChange}
-                            required
-                        />
+                        {field === "password" ? (
+                            <div style={{ position: 'relative', width: '90%' }}>
+                                <input
+                                    style={{ width: '100%' }}
+                                    type={showPassword ? "text" : "password"}
+                                    name={field}
+                                    value={formData[field]}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                                <button 
+                                    type="button"
+                                    onClick={togglePasswordVisibility}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '10px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        padding: '0',
+                                        color: '#666'
+                                    }}
+                                >
+                                    {showPassword ? "👁️" : "👁️‍🗨️"}
+                                </button>
+                            </div>
+                        ) : (
+                            <input
+                                type={field === "email" ? "email" : "text"}
+                                name={field}
+                                value={formData[field]}
+                                onChange={handleInputChange}
+                                required
+                            />
+                        )}
                     </div>
                 ))}
                 <button type="submit">Registrar</button>

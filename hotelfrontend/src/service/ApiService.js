@@ -82,6 +82,20 @@ export default class ApiService {
         return resp.data;
     }
 
+    // Recuperação de senha
+    static async forgotPassword(email) {
+        // Não enviar headers de autenticação!
+        const resp = await axios.post(`${this.BASE_URL}/password/forgot`, { email }, {
+            headers: { "Content-Type": "application/json" }
+        });
+        return resp.data;
+    }
+
+    static async resetPassword(token, newPassword) {
+        const resp = await axios.post(`${this.BASE_URL}/password/reset`, { token, newPassword });
+        return resp.data;
+    }
+
     // USERS
     static async myProfile() {
         const resp = await axios.get(`${this.BASE_URL}/users/account`, {
