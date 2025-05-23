@@ -141,10 +141,23 @@ public class BookingServiceImpl implements BookingService {
 
         String paymentUrl = frontendUrl + "/payment/" + bookingReference + "/" + totalPrice;
 
+        StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append(String.format("Prezado(a) %s,\n\n", currentUser.getFirstName()));
+        messageBuilder.append("Agradecemos por escolher a Quinta do Ypuã para sua estadia! Sua reserva foi confirmada com sucesso.\n\n");
+        messageBuilder.append("DETALHES DA RESERVA:\n");
+        messageBuilder.append(String.format("Número da Reserva: %s\n", bookingReference));
+        messageBuilder.append(String.format("Check-in: %s\n", bookingDTO.getCheckInDate().toString()));
+        messageBuilder.append(String.format("Check-out: %s\n", bookingDTO.getCheckOutDate().toString()));
+        messageBuilder.append(String.format("Quarto: %s\n", room.getTitle()));
+        messageBuilder.append(String.format("Valor Total: R$ %.2f\n\n", totalPrice));
+        messageBuilder.append(String.format("• Para garantir sua reserva, realize o pagamento através do link abaixo:\n%s\n\n", paymentUrl));
+        messageBuilder.append("Atenciosamente,\n");
+        messageBuilder.append("Equipe Quinta do Ypuã");
+
         NotificationDTO notificationDTO = NotificationDTO.builder()
                 .recipient(currentUser.getEmail())
                 .subject("Confirmação de Reserva | Quinta do Ypuã")
-                .body("Sua reserva foi criada com sucesso. Prossiga com o pagamento usando o link abaixo.\n\n" + paymentUrl)
+                .body(messageBuilder.toString())
                 .bookingReference(bookingReference)
                 .build();
 

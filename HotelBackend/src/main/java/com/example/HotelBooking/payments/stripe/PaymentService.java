@@ -104,19 +104,30 @@ public class PaymentService {
                 booking.setPaymentStatus(PaymentStatus.COMPLETED);
                 bookingRepository.save(booking);
 
-                notificationDTO.setSubject("Pagamento da reserva realizado com sucesso");
-                notificationDTO.setBody(String.format(
-                    "Parabéns! Seu pagamento pela reserva com referência %s foi realizado com sucesso.\n\n" +
-                    "Detalhes da reserva:\n" +
-                    "- Check-in: %s\n" +
-                    "- Check-out: %s\n" +
-                    "- Valor: R$ %.2f\n\n" +
-                    "Obrigado por escolher nossos serviços!",
-                    bookingReference,
-                    booking.getCheckInDate(),
-                    booking.getCheckOutDate(),
-                    payment.getAmount()
-                ));
+                StringBuilder messageBuilder = new StringBuilder();
+                messageBuilder.append(String.format("Prezado(a) %s,\n\n", booking.getUser().getFirstName()));
+                messageBuilder.append("Seu pagamento foi processado com sucesso! Agradecemos a preferência.\n\n");
+                messageBuilder.append("DETALHES DA RESERVA:\n");
+                messageBuilder.append(String.format("Número da Reserva: %s\n", bookingReference));
+                messageBuilder.append(String.format("Check-in: %s\n", booking.getCheckInDate()));
+                messageBuilder.append(String.format("Check-out: %s\n", booking.getCheckOutDate()));
+                messageBuilder.append(String.format("Quarto: %s\n", booking.getRoom().getTitle()));
+                messageBuilder.append(String.format("Valor Total Pago: R$ %.2f\n\n", payment.getAmount()));
+                messageBuilder.append("PRÓXIMOS PASSOS:\n");
+                messageBuilder.append(String.format(" Anote seu número de reserva: %s\n", bookingReference));
+                messageBuilder.append(" Apresente um documento com foto no momento do check-in\n\n");
+                messageBuilder.append("SERVIÇOS ADICIONAIS:\n");
+                messageBuilder.append("• Café da manhã incluso, servido das 7:00 às 10:00\n");
+                messageBuilder.append("• Wi-Fi gratuito em todas as áreas\n");
+                messageBuilder.append("• Serviço de quarto\n");
+                messageBuilder.append("• Lavanderia\n");
+                messageBuilder.append("• Estacionamento gratuito\n\n");
+                messageBuilder.append("Agradecemos a confiança e estamos ansiosos para recebê-lo(a)!\n\n");
+                messageBuilder.append("Atenciosamente,\n");
+                messageBuilder.append("Equipe Quinta do Ypuã");
+
+                notificationDTO.setSubject("Pagamento Confirmado | Quinta do Ypuã");
+                notificationDTO.setBody(messageBuilder.toString());
 
                 try {
                     notificationService.sendEmail(notificationDTO);
@@ -129,8 +140,11 @@ public class PaymentService {
 
                 notificationDTO.setSubject("Falha no pagamento da reserva");
                 notificationDTO.setBody(String.format(
-                    "Seu pagamento pela reserva %s falhou.\nMotivo: %s\n\n" +
-                    "Por favor, tente novamente ou entre em contato conosco para assistência.",
+                    "Prezado(a) hóspede,\n\n" +
+                    "Infelizmente houve uma falha no processamento do pagamento da sua reserva %s.\n" +
+                    "Motivo: %s\n\n" +
+                    "Por favor, tente novamente ou entre em contato conosco para assistência.\n\n" +
+                    "Atenciosamente,\n" +
                     bookingReference,
                     paymentRequest.getFailureReason()
                 ));

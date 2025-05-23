@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
                .orElseThrow(()-> new NotFoundException("E-mail não encontrado"));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new InvalidCredentialException("A senha não corresponde");
+            throw new InvalidCredentialException("Senha incorreta. Por favor, verifique suas credenciais e tente novamente.");
         }
 
         String token = jwtUtils.generateToken(user.getEmail());
