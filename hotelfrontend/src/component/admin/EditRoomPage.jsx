@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ApiService from "../../service/ApiService";
+import Swal from "sweetalert2";
 
 const EditRoomPage = () => {
   const { roomId } = useParams();
@@ -17,14 +18,21 @@ const EditRoomPage = () => {
   });
 
   const [roomTypes, setRoomTypes] = useState([]);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        Swal.fire({
+          title: 'Carregando...',
+          text: 'Buscando detalhes do quarto',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
         const roomResponse = await ApiService.getRoomById(roomId);
         setRoomDetails({
           roomNumber: roomResponse.room.roomNumber,
@@ -38,8 +46,15 @@ const EditRoomPage = () => {
         setImagePreview(`${process.env.REACT_APP_API_BACKEND}/api/rooms/${roomId}/image`);
         const typesResponse = await ApiService.getRoomTypes();
         setRoomTypes(typesResponse);
+        
+        Swal.close();
       } catch (error) {
-        setError(error.response?.data?.message || error.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao Carregar',
+          text: error.response?.data?.message || error.message,
+          confirmButtonColor: '#d33'
+        });
       }
     };
     fetchData();
@@ -58,7 +73,33 @@ const EditRoomPage = () => {
     setImageFile(file);
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result);
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        
+        // Verifica o tamanho do arquivo (máximo 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Arquivo Grande',
+            text: 'A imagem selecionada é maior que 5MB. Isso pode causar lentidão no carregamento.',
+            confirmButtonColor: '#3085d6'
+          });
+        } else {
+          // Toast de sucesso para confirmação visual
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+          });
+          
+          Toast.fire({
+            icon: 'success',
+            title: 'Imagem carregada com sucesso'
+          });
+        }
+      };
       reader.readAsDataURL(file);
     } else {
       setImagePreview(`${process.env.REACT_APP_API_BACKEND}/api/rooms/${roomId}/image`);
@@ -67,16 +108,50 @@ const EditRoomPage = () => {
 
   const handleUpdate = async () => {
     if (!roomDetails.title || !roomDetails.type || !roomDetails.pricePerNight || !roomDetails.roomNumber || !roomDetails.capacity) {
-      setError("Todos os detalhes do quarto devem ser fornecidos.");
-      setTimeout(() => setError(""), 5000);
+      Swal.fire({
+        icon: 'error',
+        title: 'Campos Incompletos',
+        text: 'Todos os detalhes do quarto devem ser fornecidos.',
+        confirmButtonColor: '#d33'
+      });
       return;
     }
     if (!imageFile && !roomDetails.imageUrl && !imagePreview) {
-      setError("Por favor, selecione uma imagem do quarto.");
-      setTimeout(() => setError(""), 5000);
+      Swal.fire({
+        icon: 'warning',
+        title: 'Imagem Necessária',
+        text: 'Por favor, selecione uma imagem do quarto.',
+        confirmButtonColor: '#3085d6'
+      });
       return;
     }
+
+    // Confirmar antes de atualizar
+    const result = await Swal.fire({
+      title: 'Confirmar Atualização',
+      text: 'Tem certeza que deseja atualizar este quarto?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sim, atualizar!',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     try {
+      Swal.fire({
+        title: 'Processando...',
+        text: 'Atualizando dados do quarto',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      
       const payload = {
         ...roomDetails,
         id: roomId,
@@ -84,44 +159,76 @@ const EditRoomPage = () => {
       };
       const result = await ApiService.updateRoomWithImage(payload, imageFile);
       if (result.status === 200) {
-        setSuccess("Quarto atualizado com sucesso.");
-        setTimeout(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Quarto atualizado com sucesso.',
+          confirmButtonColor: '#28a745'
+        }).then(() => {
           navigate("/admin/manage-rooms");
-        }, 3000);
+        });
       }
     } catch (error) {
-      setError(error.response?.data?.message || error.message);
-    } finally {
-      setTimeout(() => {
-        setError("");
-        setSuccess("");
-      }, 5000);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: error.response?.data?.message || error.message,
+        confirmButtonColor: '#d33'
+      });
     }
   };
 
   const handleDelete = async () => {
-    if (window.confirm("Você tem certeza que deseja deletar este quarto?")) {
-      try {
-        const result = await ApiService.deleteRoom(roomId);
-        if (result.status === 200) {
-          setSuccess("Quarto deletado com sucesso.");
-          setTimeout(() => {
-            navigate("/admin/manage-rooms");
-          }, 3000);
+    // Confirmar antes de deletar
+    const result = await Swal.fire({
+      title: 'Confirmar Exclusão',
+      text: 'Você tem certeza que deseja deletar este quarto? Esta ação não pode ser desfeita.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sim, deletar!',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      Swal.fire({
+        title: 'Processando...',
+        text: 'Excluindo quarto',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
         }
-      } catch (error) {
-        setError(error.response?.data?.message || error.message);
-      } finally {
-        setTimeout(() => setError(""), 5000);
+      });
+      
+      const result = await ApiService.deleteRoom(roomId);
+      if (result.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: 'Quarto deletado com sucesso.',
+          confirmButtonColor: '#28a745'
+        }).then(() => {
+          navigate("/admin/manage-rooms");
+        });
       }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: error.response?.data?.message || error.message,
+        confirmButtonColor: '#d33'
+      });
     }
   };
 
   return (
     <div className="edit-room-container">
       <h2>Editar Quarto</h2>
-      {error && <p className="error-message">{error}</p>}
-      {success && <p className="success-message">{success}</p>}
       <form onSubmit={(e) => { e.preventDefault(); handleUpdate(); }} encType="multipart/form-data">
         <div className="edit-room-form">
           <div className="form-group">

@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import ApiService from "../../service/ApiService";
+import Swal from "sweetalert2";
 
 const AddRoomPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isEditMode = location.pathname.includes("edit");
   const roomToEdit = location.state?.room;
+
+  // Limpa qualquer alerta pendente ao montar o componente
+  useEffect(() => {
+    Swal.close();
+  }, []);
   
   const [roomDetails, setRoomDetails] = useState({
     imageUrl: roomToEdit?.imageUrl || "",
@@ -18,8 +24,6 @@ const AddRoomPage = () => {
     title: roomToEdit?.title || "",
   });
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [roomTypes, setRoomTypes] = useState([]);
   const [newRoomType, setNewRoomType] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -33,6 +37,12 @@ const AddRoomPage = () => {
       } catch (error) {
         setRoomTypes([]);
         console.log(error.message);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Aviso',
+          text: 'Não foi possível carregar os tipos de quarto. Por favor, tente novamente mais tarde.',
+          confirmButtonColor: '#3085d6'
+        });
       }
     };
     fetchRoomTypes();
@@ -66,7 +76,33 @@ const AddRoomPage = () => {
     setImageFile(file);
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result);
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        
+        // Verifica o tamanho do arquivo (máximo 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Arquivo Grande',
+            text: 'A imagem selecionada é maior que 5MB. Isso pode causar lentidão no carregamento.',
+            confirmButtonColor: '#3085d6'
+          });
+        } else {
+          // Toast de sucesso para confirmação visual
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+          });
+          
+          Toast.fire({
+            icon: 'success',
+            title: 'Imagem carregada com sucesso'
+          });
+        }
+      };
       reader.readAsDataURL(file);
     } else {
       setImagePreview("");
@@ -78,18 +114,36 @@ const AddRoomPage = () => {
     const tipoFinal = newRoomType.trim() !== "" ? newRoomType : roomDetails.type;
 
     if (!tipoFinal || !roomDetails.pricePerNight || !roomDetails.capacity || !roomDetails.roomNumber || !roomDetails.title) {
-      setError("Todos os detalhes do quarto devem ser fornecidos.");
-      setTimeout(() => setError(""), 5000);
+      Swal.fire({
+        icon: 'error',
+        title: 'Campos Incompletos',
+        text: 'Todos os detalhes do quarto devem ser fornecidos.',
+        confirmButtonColor: '#d33'
+      });
       return;
     }
 
     if (!imageFile) {
-      setError("Por favor, selecione uma imagem do quarto.");
-      setTimeout(() => setError(""), 5000);
+      Swal.fire({
+        icon: 'warning',
+        title: 'Imagem Necessária',
+        text: 'Por favor, selecione uma imagem do quarto.',
+        confirmButtonColor: '#3085d6'
+      });
       return;
     }
 
-    if (!window.confirm(`Você quer ${isEditMode ? 'atualizar' : 'adicionar'} este quarto?`)) {
+    const result = await Swal.fire({
+      title: `Você quer ${isEditMode ? 'atualizar' : 'adicionar'} este quarto?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sim',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) {
       return;
     }
 
@@ -101,28 +155,42 @@ const AddRoomPage = () => {
         title: roomDetails.title
       };
 
-      const result = isEditMode
+      Swal.fire({
+        title: 'Processando...',
+        text: 'Aguarde enquanto processamos sua solicitação',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      const apiResult = isEditMode
         ? await ApiService.updateRoomWithImage(payload, imageFile)
         : await ApiService.addRoomWithImage(payload, imageFile);
 
-      if (result.status === 200) {
-        setSuccess(`Quarto ${isEditMode ? 'atualizado' : 'adicionado'} com sucesso.`);
-        setTimeout(() => {
-          setSuccess("");
+      if (apiResult.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Sucesso!',
+          text: `Quarto ${isEditMode ? 'atualizado' : 'adicionado'} com sucesso.`,
+          confirmButtonColor: '#28a745'
+        }).then(() => {
           navigate("/admin/manage-rooms");
-        }, 3000);
+        });
       }
     } catch (error) {
-      setError(error.response?.data?.message || error.message);
-      setTimeout(() => setError(""), 5000);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro',
+        text: error.response?.data?.message || error.message,
+        confirmButtonColor: '#d33'
+      });
     }
   };
 
   return (
     <div className="edit-room-container">
       <h2>{isEditMode ? 'Editar Quarto' : 'Adicionar Novo Quarto'}</h2>
-      {error && <p className="error-message">{error}</p>}
-      {success && <p className="success-message">{success}</p>}
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="edit-room-form">
           <div className="form-group">

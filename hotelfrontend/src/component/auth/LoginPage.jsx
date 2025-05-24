@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ApiService from "../../service/ApiService";
+import Swal from "sweetalert2";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -24,36 +25,94 @@ const LoginPage = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+    
+    // Toast para indicar mudança na visibilidade da senha
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true
+    });
+    
+    Toast.fire({
+      icon: 'info',
+      title: showPassword ? 'Senha oculta' : 'Senha visível'
+    });
   };
 
-  const handleSubmit = async (e) =>{
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const {email, password} = formData;
 
     if (!email || !password) {
-        setError("Por favor, preencha todas os campos")
+        setError("Por favor, preencha todas os campos");
         setTimeout(() => setError(""), 5000);
+        
+        // Alerta visual para campos vazios
+        Swal.fire({
+            icon: 'error',
+            title: 'Campos obrigatórios',
+            text: 'Por favor, preencha todos os campos',
+            confirmButtonColor: '#d33',
+            timer: 5000,
+            timerProgressBar: true
+        });
         return;
     }
+
+    // Mostrar indicador de carregamento
+    Swal.fire({
+        title: 'Autenticando...',
+        text: 'Verificando suas credenciais',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
     try {
         const {status, token, role} = await ApiService.loginUser(formData);
         if (status === 200) {
             ApiService.saveToken(token)
             ApiService.saveRole(role)
-            navigate(redirectPath, {replace: true})
+            
+            // Fechar o indicador de carregamento e mostrar mensagem de sucesso
+            Swal.fire({
+                icon: 'success',
+                title: 'Login realizado com sucesso!',
+                text: 'Você será redirecionado em instantes...',
+                timer: 1500,
+                timerProgressBar: true,
+                showConfirmButton: false
+            }).then(() => {
+                navigate(redirectPath, {replace: true})
+            });
         }
         
     } catch (error) {
-        setError(error.response?.data?.message || error.message)
+        const errorMsg = error.response?.data?.message || error.message;
+        setError(errorMsg);
         setTimeout(() => setError(""), 5000);
         
+        // Mostrar mensagem de erro
+        Swal.fire({
+            icon: 'error',
+            title: 'Falha no login',
+            text: errorMsg || 'Ocorreu um erro ao tentar fazer login. Verifique suas credenciais.',
+            confirmButtonColor: '#d33',
+            footer: errorMsg.toLowerCase().includes('senha') || 
+                   errorMsg.toLowerCase().includes('password') ? 
+                   '<a href="/forgot-password" style="color: #007F86; font-weight: bold;">Esqueceu sua senha?</a>' : ''
+        });
     }
   }
 
   return(
     <div className="auth-container">
-        {error && (<p className="error-message">{error}</p>)}
+        {error && (<p className="error-message" style={{display: 'none'}}>{error}</p>)}
 
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
@@ -63,7 +122,29 @@ const LoginPage = () => {
                     type="email"
                     name="email"
                     value={formData.email}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                        handleChange(e);
+                        
+                        // Feedback visual em tempo real para o formato do email
+                        if (e.target.value && e.target.value.length > 5) {
+                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                            if (!emailRegex.test(e.target.value)) {
+                                // Opcional: mostrar um toast sutil para feedback em tempo real
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    timerProgressBar: true
+                                });
+                                
+                                Toast.fire({
+                                    icon: 'warning',
+                                    title: 'Formato de email inválido'
+                                });
+                            }
+                        }
+                    }}
                     required
                 />
             </div>

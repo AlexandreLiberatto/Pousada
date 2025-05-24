@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import ApiService from "../../service/ApiService";
 import { DayPicker } from "react-day-picker";
 import { ptBR } from "date-fns/locale";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 const RoomSearch = ({ handleSearchResult }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndtDate] = useState(null);
   const [roomType, setRoomType] = useState("");
   const [roomTypes, setRoomTypes] = useState([]);
-  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   //estado para controlar a visibilidade do calendário
   const [isStartDatePickerVisible, setStartDatePickerVisible] = useState(false);
@@ -24,6 +26,7 @@ const RoomSearch = ({ handleSearchResult }) => {
         setRoomTypes(Array.isArray(types) ? types : (types ? [types] : []));
       } catch (error) {
         setRoomTypes([]);
+        showError("Erro ao carregar tipos de quartos");
       }
     };
     fetchRoomTypes();
@@ -45,23 +48,59 @@ const RoomSearch = ({ handleSearchResult }) => {
     };
   }, []);
 
-  //mostrar error
-  const showError = (message, timeout = 5000) => {
-    setError(message);
-    setTimeout(() => {
-      setError("");
-    }, timeout);
+  // Mostrar mensagens de erro usando SweetAlert2
+  const showError = (message) => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Ops!',
+      text: message,
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false
+    });
   };
 
-  //isso irá buscar os quartos aviabale da nossa API
-  const handleInternalSearch = async () => {
+  // Mostrar mensagem de sucesso
+  const showSuccess = (message) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Sucesso!',
+      text: message,
+      timer: 2000,
+      timerProgressBar: true,
+      showConfirmButton: false
+    });
+  };
+
+  // Validar datas selecionadas
+  const validateDates = () => {
     if (!startDate || !endDate) {
-      showError("Selecione as datas de entrada e saída");
+      showError("Por favor, selecione as datas de entrada e saída");
       return false;
     }
 
-    // Se o tipo de quarto for vazio ou 'Todos', envie null
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (startDate < today) {
+      showError("A data de entrada não pode ser anterior a hoje");
+      return false;
+    }
+
+    if (endDate <= startDate) {
+      showError("A data de saída deve ser posterior à data de entrada");
+      return false;
+    }
+
+    return true;
+  };
+
+  //buscar quartos disponíveis
+  const handleInternalSearch = async () => {
+    if (!validateDates()) return;
+
     const typeToSend = roomType === "" ? null : roomType;
+    setIsLoading(true);
 
     try {
       const formattedStartDate = startDate
@@ -79,33 +118,76 @@ const RoomSearch = ({ handleSearchResult }) => {
 
       if (resp.status === 200) {
         if (!resp.rooms || resp.rooms.length === 0) {
-          showError("Nenhum quarto disponível para o período selecionado.");
+          showError("Nenhum quarto disponível para o período selecionado");
           return;
         }
         handleSearchResult(resp.rooms);
-        setError("");
+        showSuccess("Quartos encontrados com sucesso!");
       }
     } catch (error) {
-      showError(error?.response?.data?.message || error.message);
+      showError(error?.response?.data?.message || "Erro ao buscar quartos disponíveis");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Traduzir tipo de quarto
+  const getRoomTypeLabel = (type) => {
+    switch (type) {
+      case "SINGLE": return "Solteiro";
+      case "DOUBLE": return "Duplo";
+      case "TRIPLE": return "Triplo";
+      case "SUIT": return "Suíte";
+      default: return type || "-";
     }
   };
 
   return (
-    <section>
-      <div className="search-container">
-        {/* data de check-in e campo de calendário*/}
+    <section className="search-section" style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      width: '100%' 
+    }}>
+      <div className="search-container" style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        width: '100%',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '20px',
+        alignItems: 'start'
+      }}>
+        {/* Data de check-in */}
         <div className="search-field" style={{ position: "relative" }}>
-          <label>Data de Entrada</label>
+          <label style={{ color: '#333', marginBottom: '8px', display: 'block' }}>
+            Data de Entrada
+          </label>
           <input
             type="text"
             value={startDate ? startDate.toLocaleDateString() : ""}
             placeholder="Selecione a data de entrada"
             onFocus={() => setStartDatePickerVisible(true)}
             readOnly
+            style={{
+              padding: '10px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              width: '100%',
+              cursor: 'pointer',
+              boxSizing: 'border-box'
+            }}
           />
 
           {isStartDatePickerVisible && (
-            <div className="datepicker-container" ref={startDateRef}>
+            <div className="datepicker-container" ref={startDateRef} style={{
+              position: 'absolute',
+              zIndex: 1000,
+              background: 'white',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+              borderRadius: '4px'
+            }}>
               <DayPicker
                 locale={ptBR}
                 selected={startDate}
@@ -119,19 +201,35 @@ const RoomSearch = ({ handleSearchResult }) => {
           )}
         </div>
 
-        {/*confira o campo de data e calendário */}
+        {/* Data de check-out */}
         <div className="search-field" style={{ position: "relative" }}>
-          <label>Data de Saída</label>
+          <label style={{ color: '#333', marginBottom: '8px', display: 'block' }}>
+            Data de Saída
+          </label>
           <input
             type="text"
             value={endDate ? endDate.toLocaleDateString() : ""}
             placeholder="Selecione a data de saída"
             onFocus={() => setEndDatePickerVisible(true)}
             readOnly
+            style={{
+              padding: '10px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              width: '100%',
+              cursor: 'pointer',
+              boxSizing: 'border-box'
+            }}
           />
 
           {isEndDatePickerVisible && (
-            <div className="datepicker-container" ref={endDateRef}>
+            <div className="datepicker-container" ref={endDateRef} style={{
+              position: 'absolute',
+              zIndex: 1000,
+              background: 'white',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+              borderRadius: '4px'
+            }}>
               <DayPicker
                 locale={ptBR}
                 selected={endDate}
@@ -145,45 +243,57 @@ const RoomSearch = ({ handleSearchResult }) => {
           )}
         </div>
 
-        {/*CAMPOS DE SELEÇÃO DO TIPO DE QUARTO */}
+        {/* Seleção de tipo de quarto */}
         <div className="search-field">
-          <label>Tipo de Quarto</label>
-          <select value={roomType} onChange={(e) => setRoomType(e.target.value)}>
+          <label style={{ color: '#333', marginBottom: '8px', display: 'block' }}>
+            Tipo de Quarto
+          </label>
+          <select 
+            value={roomType} 
+            onChange={(e) => setRoomType(e.target.value)}
+            style={{
+              padding: '10px',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+              width: '100%',
+              cursor: 'pointer',
+              boxSizing: 'border-box'
+            }}
+          >
             <option value="">Todos</option>
-            {Array.isArray(roomTypes) && roomTypes.map((roomType) => {
-              let roomTypeLabel;
-              switch (roomType) {
-                case "SINGLE":
-                  roomTypeLabel = "Solteiro";
-                  break;
-                case "DOUBLE":
-                  roomTypeLabel = "Duplo";
-                  break;
-                case "TRIPLE":
-                  roomTypeLabel = "Triplo";
-                  break;
-                case "SUIT":
-                  roomTypeLabel = "Suíte";
-                  break;
-                default:
-                  roomTypeLabel = roomType || "-";
-              }
-              return (
-                <option value={roomType} key={roomType}>
-                  {roomTypeLabel}
-                </option>
-              );
-            })}
+            {Array.isArray(roomTypes) && roomTypes.map((type) => (
+              <option value={type} key={type}>
+                {getRoomTypeLabel(type)}
+              </option>
+            ))}
           </select>
         </div>
 
-        {/*BOTÃO DE PESQUISA */}
-        <button className="home-search-button" onClick={handleInternalSearch}>
-        Pesquisar Quartos
-        </button>
+        {/* Botão de pesquisa */}
+        <div className="search-field">
+          <button 
+            className="home-search-button" 
+            onClick={handleInternalSearch}
+            disabled={isLoading}
+            style={{
+              backgroundColor: '#28a745',
+              color: 'white',
+              padding: '12px 24px',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: isLoading ? 'wait' : 'pointer',
+              transition: 'background-color 0.3s',
+              width: '100%',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              marginTop: '24px'
+            }}
+          >
+            {isLoading ? 'Buscando...' : 'Pesquisar Quartos'}
+          </button>
+        </div>
       </div>
 
-      {error && <p className="error-message">{error}</p>}
     </section>
   );
 };
