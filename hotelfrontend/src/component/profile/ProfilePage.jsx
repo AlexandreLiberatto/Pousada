@@ -7,7 +7,6 @@ import "sweetalert2/dist/sweetalert2.min.css";
 const ProfilePage = () => {
     const [user, setUser] = useState(null);
     const [bookings, setBookings] = useState(null);
-    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
@@ -43,7 +42,6 @@ const ProfilePage = () => {
                 Swal.close();
             } catch (error) {
                 showError(error.response?.data?.message || error.message);
-                setError(error.response?.data?.message || error.message);
             } finally {
                 setLoading(false);
             }
