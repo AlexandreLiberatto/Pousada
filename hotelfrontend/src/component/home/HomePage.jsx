@@ -6,9 +6,11 @@ import RoomSearch from "../common/RoomSearch";
 const HomePage = () => {
 
     const [roomSearchResult, setRoomSearchResult] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     //função para manipular resultados de pesquisa
     const handleSearchResult = (results) => {
+        setIsLoading(false);
         setRoomSearchResult(results);
     }
 
@@ -26,8 +28,8 @@ const HomePage = () => {
                 </header>
             </section>
 
-            <RoomSearch handleSearchResult={handleSearchResult}/>
-            <RoomResult roomSearchResults={roomSearchResult}/>
+            <RoomSearch handleSearchResult={handleSearchResult} setParentLoading={setIsLoading}/>
+            <RoomResult roomSearchResults={roomSearchResult} isLoading={isLoading}/>
 
             <h2 className="home-services">Serviços na <span className="phegon-color">Quinta do Ypuã</span></h2>
 

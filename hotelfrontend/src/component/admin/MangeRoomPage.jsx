@@ -14,11 +14,13 @@ const ManageRoomPage = () => {
     const [roomTypes, setRoomTypes] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const [roomsPerPage] = useState(8)
+    const [isLoading, setIsLoading] = useState(true)
     const navigate = useNavigate();
 
 
 
     useEffect(()=> {
+        setIsLoading(true);
         const fetchData = async () => {
             try {
                 Swal.fire({
@@ -42,6 +44,7 @@ const ManageRoomPage = () => {
                 setRoomTypes(Array.isArray(typesResp) ? typesResp : (typesResp ? [typesResp] : []));
                 
                 Swal.close();
+                setIsLoading(false);
                 
                 // Mostrar toast de sucesso após carregar
                 const Toast = Swal.mixin({
@@ -290,7 +293,7 @@ const ManageRoomPage = () => {
             </div>
           </div>
     
-          <RoomResult roomSearchResults={currentRooms} />
+          <RoomResult roomSearchResults={currentRooms} isLoading={isLoading} />
     
           <Pagination
             roomPerPage={roomsPerPage}

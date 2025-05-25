@@ -179,23 +179,54 @@ const EditRoomPage = () => {
   };
 
   const handleDelete = async () => {
-    // Confirmar antes de deletar
-    const result = await Swal.fire({
-      title: 'Confirmar Exclusão',
-      text: 'Você tem certeza que deseja deletar este quarto? Esta ação não pode ser desfeita.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sim, deletar!',
-      cancelButtonText: 'Cancelar'
-    });
-
-    if (!result.isConfirmed) {
-      return;
-    }
-
     try {
+      // Primeiro verificar se há reservas futuras ou atuais para o quarto
+      Swal.fire({
+        title: 'Verificando...',
+        text: 'Verificando disponibilidade para deleção',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      const bookings = await ApiService.getAllBookings();
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Filtrar reservas ativas (futuras ou atuais) para este quarto
+      const activeBookings = bookings.bookings.filter(booking => {
+        return booking.room.id === roomId && 
+              new Date(booking.checkOutDate).toISOString().split('T')[0] >= today &&
+              booking.bookingStatus !== 'CANCELLED';
+      });
+      
+      // Se existirem reservas ativas, impedir a deleção
+      if (activeBookings.length > 0) {
+        Swal.fire({
+          title: 'Não é possível deletar',
+          text: 'Este quarto possui reservas futuras ou atuais. Cancele todas as reservas antes de deletar o quarto.',
+          icon: 'error',
+          confirmButtonColor: '#d33'
+        });
+        return;
+      }
+
+      // Confirmar antes de deletar
+      const result = await Swal.fire({
+        title: 'Confirmar Exclusão',
+        text: 'Você tem certeza que deseja deletar este quarto? Esta ação não pode ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, deletar!',
+        cancelButtonText: 'Cancelar'
+      });
+
+      if (!result.isConfirmed) {
+        return;
+      }
+
       Swal.fire({
         title: 'Processando...',
         text: 'Excluindo quarto',
@@ -205,8 +236,8 @@ const EditRoomPage = () => {
         }
       });
       
-      const result = await ApiService.deleteRoom(roomId);
-      if (result.status === 200) {
+      const deleteResult = await ApiService.deleteRoom(roomId);
+      if (deleteResult.status === 200) {
         Swal.fire({
           icon: 'success',
           title: 'Sucesso!',

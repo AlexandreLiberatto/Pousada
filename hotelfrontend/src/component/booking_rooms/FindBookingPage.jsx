@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ApiService from '../../service/ApiService'; // chamando serviço no arquivo ApiService.js
 import Swal from "sweetalert2";
+import html2pdf from 'html2pdf.js';
 
 const FindBookingPage = () => {
     const [confirmationCode, setConfirmationCode] = useState(''); //Variável de estado para código de confirmação 
     const [bookingDetails, setBookingDetails] = useState(null); // Variável de estado para detalhes de reserva
     const [error, setError] = useState(null); // Rastreie quaisquer erros
     const [pageLoaded, setPageLoaded] = useState(false); // Estado para controlar a animação inicial
+    const bookingDetailsRef = useRef(null); // Referência para o componente de detalhes da reserva
 
     // Efeito para exibir um toast de boas-vindas quando a página carregar
     useEffect(() => {
@@ -65,6 +67,216 @@ const FindBookingPage = () => {
             return `${baseUrl}/api/rooms/${room.id}/image`;
         }
         return "https://via.placeholder.com/300x200?text=Sem+Imagem";
+    };
+
+    // Função para gerar e baixar o PDF
+    const generatePDF = () => {
+        if (!bookingDetails || !bookingDetailsRef.current) return;
+
+        // Mostrar loader enquanto gera o PDF
+        Swal.fire({
+            title: 'Gerando PDF',
+            html: 'Preparando o documento da sua reserva...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+            backdrop: `
+                rgba(0,0,123,0.4)
+                url("/images/bg.jpg")
+                left top
+                no-repeat
+            `
+        });
+
+        // Configurações do PDF
+        const options = {
+            margin: [10, 10, 10, 10],
+            filename: `Reserva-${bookingDetails.bookingReference}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2,
+                useCORS: true,
+                logging: false
+            },
+            jsPDF: { 
+                unit: 'mm', 
+                format: 'a4', 
+                orientation: 'portrait',
+                compress: true
+            },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        // Clona o elemento para não afetar o original
+        const element = bookingDetailsRef.current.cloneNode(true);
+        
+        // Remover botões ou elementos interativos que não devem aparecer no PDF
+        const interactiveElements = element.querySelectorAll('button');
+        interactiveElements.forEach(el => el.remove());
+
+        // Preparar estilos específicos para PDF
+        const style = document.createElement('style');
+        style.textContent = `
+            .pdf-container {
+                padding: 20px;
+                font-family: 'Arial', sans-serif;
+                color: #333;
+            }
+            .pdf-header {
+                text-align: center;
+                margin-bottom: 30px;
+                padding: 15px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                border-bottom: 3px solid #007bff;
+            }
+            .pdf-title {
+                color: #007bff;
+                margin: 0;
+                padding: 10px 0;
+                font-size: 24px;
+                font-weight: bold;
+            }
+            .pdf-subtitle {
+                margin: 5px 0;
+                color: #666;
+                font-size: 14px;
+            }
+            .pdf-section {
+                margin: 20px 0;
+                padding: 15px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                background-color: #ffffff;
+            }
+            .pdf-section-title {
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 10px;
+                color: #343a40;
+                font-size: 18px;
+                margin-top: 0;
+            }
+            .pdf-info-row {
+                margin: 10px 0;
+                padding: 8px;
+                background-color: #f8f9fa;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+            .pdf-info-label {
+                font-weight: bold;
+                display: inline-block;
+                margin-right: 10px;
+            }
+            .pdf-info-value {
+                display: inline-block;
+            }
+            .pdf-footer {
+                text-align: center;
+                margin-top: 30px;
+                padding: 15px;
+                border-top: 1px solid #ddd;
+                color: #666;
+                font-size: 12px;
+            }
+            .pdf-highlight {
+                background-color: #e2f0ff;
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-family: monospace;
+                font-size: 0.9em;
+            }
+            .pdf-status {
+                padding: 3px 8px;
+                border-radius: 4px;
+                color: white;
+                font-weight: bold;
+            }
+            .pdf-status-pending {
+                background-color: #ffc107;
+            }
+            .pdf-status-completed {
+                background-color: #28a745;
+            }
+            .pdf-status-failed {
+                background-color: #dc3545;
+            }
+            .pdf-room-details {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .pdf-room-image {
+                max-width: 300px;
+                border-radius: 8px;
+                margin: 10px 0;
+            }
+        `;
+        element.appendChild(style);
+
+        // Adicionar logo e informações adicionais para o PDF
+        const pdfContainer = document.createElement('div');
+        pdfContainer.className = 'pdf-container';
+
+        const header = document.createElement('div');
+        header.className = 'pdf-header';
+        header.innerHTML = `
+            <h1 class="pdf-title">Quinta do Ypuã</h1>
+            <p class="pdf-subtitle">Comprovante de Reserva</p>
+            <p class="pdf-subtitle">Documento gerado em: ${new Date().toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })}</p>
+        `;
+        
+        // Movendo o conteúdo original para dentro do novo container
+        while (element.firstChild) {
+            pdfContainer.appendChild(element.firstChild);
+        }
+        
+        // Adicionar o header como primeiro elemento
+        pdfContainer.insertBefore(header, pdfContainer.firstChild);
+
+        // Adicionar footer
+        const footer = document.createElement('div');
+        footer.className = 'pdf-footer';
+        footer.innerHTML = `
+            <p>Quinta do Ypuã - Seu refúgio de conforto</p>
+            <p>WhatsApp: (48) 99160-4054 | Email: quinta.do.ypua.reservas@gmail.com</p>
+            <p>© ${new Date().getFullYear()} - Todos os direitos reservados</p>
+        `;
+        pdfContainer.appendChild(footer);
+        
+        // Substituir o elemento original pelo container formatado
+        element.appendChild(pdfContainer);
+
+        // Gerar o PDF
+        html2pdf().from(element).set(options).save().then(() => {
+            // Fechar o loader e mostrar mensagem de sucesso
+            Swal.fire({
+                icon: 'success',
+                title: 'PDF Gerado com Sucesso!',
+                text: 'O comprovante da sua reserva foi baixado.',
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#28a745'
+            });
+        }).catch(error => {
+            // Em caso de erro
+            console.error('Erro ao gerar PDF:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro ao Gerar PDF',
+                text: 'Não foi possível gerar o PDF. Por favor, tente novamente.',
+                confirmButtonColor: '#d33'
+            });
+        });
     };
 
     const handleSearch = async () => {
@@ -344,7 +556,9 @@ const FindBookingPage = () => {
             </div>
             {error && <p style={{ color: 'red', textAlign: 'center', display: 'none' }}>{error}</p>}
             {bookingDetails && (
-                <div className="booking-details" style={{ 
+                <div className="booking-details" 
+                    ref={bookingDetailsRef}
+                    style={{ 
                     textAlign: 'center', 
                     marginTop: '20px',
                     animation: 'fadeIn 0.5s',
@@ -356,11 +570,43 @@ const FindBookingPage = () => {
                     width: '100%',
                     background: '#ffffff'
                 }}>
-                    <h3 style={{ 
-                        borderBottom: '2px solid #007bff', 
-                        paddingBottom: '10px',
-                        color: '#343a40'
-                    }}>Detalhes da Reserva</h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3 style={{ 
+                            borderBottom: '2px solid #007bff', 
+                            paddingBottom: '10px',
+                            color: '#343a40'
+                        }}>Detalhes da Reserva</h3>
+                        <button 
+                            onClick={generatePDF} 
+                            style={{
+                                backgroundColor: '#28a745',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '8px 16px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                transition: 'all 0.3s ease'
+                            }}
+                            onMouseOver={(e) => {
+                                e.target.style.backgroundColor = '#218838';
+                                e.target.style.transform = 'translateY(-2px)';
+                                e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.target.style.backgroundColor = '#28a745';
+                                e.target.style.transform = 'translateY(0)';
+                                e.target.style.boxShadow = 'none';
+                            }}
+                        >
+                            <i className="fas fa-file-pdf" style={{ marginRight: '5px' }}></i>
+                            Baixar PDF
+                        </button>
+                    </div>
                     <p style={{ 
                         margin: '10px 0',
                         padding: '5px',

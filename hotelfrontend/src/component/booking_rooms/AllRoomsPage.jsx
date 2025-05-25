@@ -10,11 +10,14 @@ const AllRoomsPage = () => {
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [roomTypes, setRoomTypes] = useState([]);
   const [selectedRoomType, setSelectedRoomType] = useState("");
-
+  const [isLoading, setIsLoading] = useState(true);
+  // Estado de carregamento inicial removido por não estar em uso
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [roomsPerPage] = useState(9);
 
   const handleSearchResult = (results) => {
+    setIsLoading(false);
     setRooms(results);
     setFilteredRooms(results);
     setCurrentPage(1); // Reinicia a paginação ao buscar
@@ -44,6 +47,7 @@ const AllRoomsPage = () => {
 
   useEffect(() => {
     // Mostrar indicador de carregamento
+    setIsLoading(true);
     Swal.fire({
       title: 'Carregando...',
       text: 'Buscando quartos disponíveis',
@@ -107,12 +111,13 @@ const AllRoomsPage = () => {
     Promise.all([fetchRooms(), ftechRoomsType()])
       .finally(() => {
         Swal.close();
+        setIsLoading(false);
       });
   }, []); // Manter a dependência vazia para evitar loop infinito
 
   // Verificar se há quartos disponíveis após o carregamento
   useEffect(() => {
-    if (rooms && rooms.length === 0) {
+    if (!isLoading && rooms && rooms.length === 0) {
       Swal.fire({
         icon: 'info',
         title: 'Nenhum quarto disponível',
@@ -121,7 +126,7 @@ const AllRoomsPage = () => {
         confirmButtonColor: '#3085d6'
       });
     }
-  }, [rooms]);
+  }, [rooms, isLoading]);
 
   //lidar com mudanças no filtro de tipo de quarto
   const handleRoomTypeChange = (e) => {
@@ -316,8 +321,8 @@ const AllRoomsPage = () => {
         </select>
       </div>
 
-      <RoomSearch handleSearchResult={handleSearchResult} />
-      <RoomResult roomSearchResults={currentRooms} />
+      <RoomSearch handleSearchResult={handleSearchResult} setParentLoading={setIsLoading} />
+      <RoomResult roomSearchResults={currentRooms} isLoading={isLoading} />
 
       <Pagination
         roomPerPage={roomsPerPage}

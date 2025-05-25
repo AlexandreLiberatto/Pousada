@@ -239,6 +239,72 @@ export default class ApiService {
         this.clearAuth();
     }
 
+    // BACKUP DE DADOS
+    static async getBackupData(dataType) {
+        try {
+            console.log(`Iniciando backup para: ${dataType}`);
+            const backupData = { timestamp: new Date().toISOString() };
+
+            // Coleta dados com base no tipo solicitado
+            switch (dataType) {
+                case 'rooms':
+                    const rooms = await this.getAllRooms();
+                    backupData.rooms = rooms;
+                    break;
+
+                case 'bookings':
+                    const bookings = await this.getAllBookings();
+                    backupData.bookings = bookings;
+                    break;
+
+                case 'all':
+                    // Coleta todos os dados disponíveis
+                    const [allRooms, allBookings] = await Promise.all([
+                        this.getAllRooms(),
+                        this.getAllBookings()
+                    ]);
+                    
+                    backupData.rooms = allRooms;
+                    backupData.bookings = allBookings;
+                    break;
+
+                default:
+                    throw new Error(`Tipo de backup não suportado: ${dataType}`);
+            }
+
+            return JSON.stringify(backupData, null, 2);
+        } catch (error) {
+            console.error('Erro ao gerar backup:', error);
+            throw new Error(
+                error.response?.data?.message || 
+                `Erro ao fazer backup: ${error.message}`
+            );
+        }
+    }
+
+    static getAllBackupOptions() {
+        // Retorna as opções de backup disponíveis
+        return {
+            options: [
+                { 
+                    id: 'rooms', 
+                    name: 'Quartos', 
+                    description: 'Backup de todos os quartos cadastrados' 
+                },
+                { 
+                    id: 'bookings', 
+                    name: 'Reservas', 
+                    description: 'Backup de todas as reservas realizadas' 
+                },
+                { 
+                    id: 'all', 
+                    name: 'Dados Completos', 
+                    description: 'Backup completo de todos os dados do sistema' 
+                }
+            ]
+        };
+    }
+
     static isAthenticated(){
         const token = this.getToken();
         return !!token;

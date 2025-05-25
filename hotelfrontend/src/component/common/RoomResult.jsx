@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-const RoomResult = ({roomSearchResults}) => {
+const RoomResult = ({roomSearchResults, isLoading}) => {
     const navigate = useNavigate();
     const isAdmin = ApiService.isAdmin();
 
@@ -89,7 +89,66 @@ const RoomResult = ({roomSearchResults}) => {
 
     return (
         <section className="room-results">
-            { roomSearchResults && roomSearchResults.length > 0 && (
+            {isLoading && (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '40px',
+                    textAlign: 'center',
+                    minHeight: '300px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderRadius: '10px',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                    margin: '20px auto',
+                    maxWidth: '800px'
+                }}>
+                    <div className="loading-spinner" style={{
+                        border: '6px solid #f3f3f3',
+                        borderTop: '6px solid #4a90e2',
+                        borderRadius: '50%',
+                        width: '50px',
+                        height: '50px',
+                        animation: 'spin 1s linear infinite',
+                        marginBottom: '20px'
+                    }}></div>
+                    <h3 style={{ color: '#333', marginBottom: '10px' }}>Carregando Quartos Disponíveis</h3>
+                    <p style={{ color: '#666' }}>Estamos buscando as melhores opções para sua estadia. Aguarde um momento, por favor.</p>
+                    
+                    <style>
+                        {`
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                        `}
+                    </style>
+                </div>
+            )}
+            
+            {!isLoading && roomSearchResults && roomSearchResults.length === 0 && (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '40px',
+                    textAlign: 'center',
+                    minHeight: '300px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderRadius: '10px',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                    margin: '20px auto',
+                    maxWidth: '800px'
+                }}>
+                    <i className="fas fa-bed" style={{ fontSize: '50px', color: '#6c757d', marginBottom: '20px' }}></i>
+                    <h3 style={{ color: '#333', marginBottom: '10px' }}>Nenhum quarto disponível</h3>
+                    <p style={{ color: '#666' }}>No momento não há quartos disponíveis com os critérios selecionados. Tente modificar sua pesquisa.</p>
+                </div>
+            )}
+            
+            {!isLoading && roomSearchResults && roomSearchResults.length > 0 && (
             <div className="room-list">
                 {roomSearchResults.map(room => {
                     const roomTypeLabel = getRoomTypeLabel(room.type);

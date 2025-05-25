@@ -5,7 +5,7 @@ import { ptBR } from "date-fns/locale";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 
-const RoomSearch = ({ handleSearchResult }) => {
+const RoomSearch = ({ handleSearchResult, setParentLoading }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndtDate] = useState(null);
   const [roomType, setRoomType] = useState("");
@@ -101,6 +101,7 @@ const RoomSearch = ({ handleSearchResult }) => {
 
     const typeToSend = roomType === "" ? null : roomType;
     setIsLoading(true);
+    if (setParentLoading) setParentLoading(true);
 
     try {
       const formattedStartDate = startDate
@@ -119,6 +120,8 @@ const RoomSearch = ({ handleSearchResult }) => {
       if (resp.status === 200) {
         if (!resp.rooms || resp.rooms.length === 0) {
           showError("Nenhum quarto disponível para o período selecionado");
+          if (setParentLoading) setParentLoading(false);
+          setIsLoading(false);
           return;
         }
         handleSearchResult(resp.rooms);
@@ -128,6 +131,7 @@ const RoomSearch = ({ handleSearchResult }) => {
       showError(error?.response?.data?.message || "Erro ao buscar quartos disponíveis");
     } finally {
       setIsLoading(false);
+      if (setParentLoading) setParentLoading(false);
     }
   };
 
