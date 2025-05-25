@@ -48,15 +48,6 @@ const AllRoomsPage = () => {
   useEffect(() => {
     // Mostrar indicador de carregamento
     setIsLoading(true);
-    Swal.fire({
-      title: 'Carregando...',
-      text: 'Buscando quartos disponíveis',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-      showConfirmButton: false
-    });
     
     //pegue todos os quartos
     const fetchRooms = async () => {
@@ -110,7 +101,6 @@ const AllRoomsPage = () => {
     // Executar as duas chamadas e fechar o indicador de carregamento quando ambas terminarem
     Promise.all([fetchRooms(), ftechRoomsType()])
       .finally(() => {
-        Swal.close();
         setIsLoading(false);
       });
   }, []); // Manter a dependência vazia para evitar loop infinito
