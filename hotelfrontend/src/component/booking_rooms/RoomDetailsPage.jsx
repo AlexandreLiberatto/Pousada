@@ -56,22 +56,9 @@ const RoomDetailsPage = () => {
   //buscar detalhes do quarto
   useEffect(() => {
     const fetchRoomDetails = async () => {
-      // Indicador de carregamento
-      Swal.fire({
-        title: 'Carregando...',
-        text: 'Buscando informações do quarto',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
-      
       try {
         const resp = await ApiService.getRoomById(roomId);
         setRoom(resp.room);
-        
-        // Fechar o indicador de carregamento
-        Swal.close();
         
         // Toast de boas-vindas ao carregar o quarto
         const Toast = Swal.mixin({
